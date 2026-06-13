@@ -1,4 +1,5 @@
 import secrets
+import logging
 from datetime import timedelta
 
 from django.conf import settings
@@ -6,6 +7,8 @@ from django.core.mail import send_mail
 from django.utils import timezone
 
 from .models import EmailVerification
+
+logger = logging.getLogger(__name__)
 
 
 def create_email_verification(user):
@@ -19,11 +22,20 @@ def create_email_verification(user):
 def send_verification_email(user):
     verification = create_email_verification(user)
     verify_url = f"{settings.FRONTEND_URL}/verify-email?token={verification.token}"
-    send_mail(
-        subject="Emailingizni tasdiqlang",
-        message=f"Emailingizni tasdiqlash uchun link: {verify_url}",
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[user.email],
-        fail_silently=False,
-    )
+
+    try:
+        send_mail(
+            subject="Emailingizni tasdiqlang",
+            message=f"Emailingizni tasdiqlash uchun link: {verify_url}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+        logger.info(f"Verification email sent to {user.email}")
+    except Exception as e:
+        logger.error(f"Failed to send verification email to {user.email}: {str(e)}")
+        # Development uchun - email yuborilmaganda ham continue qilsin
+        if not settings.DEBUG:
+            raise
+
     return verification
