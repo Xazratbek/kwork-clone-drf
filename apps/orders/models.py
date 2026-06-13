@@ -11,14 +11,14 @@ class OrderStatus(models.TextChoices):
     DELIVERED = "delivered", "Delivered"
     COMPLETED = "completed", "Completed"
     CANCELED = "canceled", "Canceled"
-
+    REJECTED = "rejected", "Rejected"
 
 class Order(TimeStampedUUIDModel):
     buyer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="buyer_orders")
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="seller_orders")
     kwork = models.ForeignKey(Kwork, on_delete=models.PROTECT, related_name="orders")
     title_snapshot = models.CharField(max_length=220)
-    price_minor = models.PositiveBigIntegerField()
+    price_minor = models.DecimalField(max_digits=12, decimal_places= 2)
     currency = models.CharField(max_length=3, choices=Currency.choices, default=Currency.USD)
     requirements = models.TextField(blank=True)
     status = models.CharField(max_length=24, choices=OrderStatus.choices, default=OrderStatus.NEW)
