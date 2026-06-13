@@ -10,7 +10,6 @@ class KworkStatus(models.TextChoices):
     ACTIVE = "active", "Active"
     PAUSED = "paused", "Paused"
 
-
 class Kwork(TimeStampedUUIDModel):
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="kworks")
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="kworks")

@@ -5,6 +5,4 @@ class IsSeller(BasePermission):
         return request.user == obj.seller
 
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated)
-    
-
+        return bool(request.user and request.user.is_authenticated and request.user.is_seller)
