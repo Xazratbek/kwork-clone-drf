@@ -1,0 +1,354 @@
+KWORK-CLONE MVP ISHLASH LOGIKASI VA USER FLOW
+
+1. Price haqida
+
+Hozir modelda price_minor ishlatilgan:
+
+price_minor = models.PositiveBigIntegerField()
+
+minor degani pulning eng kichik birligi.
+
+Misol:
+- 10 USD = 1000 cent
+- 50 000 UZS = 50000 tiyin bo'yicha emas, amalda UZS uchun minor ishlatmoqchi bo'lsak 5000000 tiyin bo'ladi
+
+Bunday yondashuv payment sistemalarda ko'p ishlatiladi, chunki integer pul hisoblashda aniq:
+- 0.1 + 0.2 kabi decimal/float xatolari bo'lmaydi
+- payment providerlar odatda amountni minor unitda qabul qiladi
+- commission, refund, total hisoblashda yaxlitlash nazoratda bo'ladi
+
+Lekin bu MVP uchun biroz tushunarsiz bo'lishi mumkin. Agar real payment hali yo'q bo'lsa,
+price = DecimalField(max_digits=12, decimal_places=2) developer uchun osonroq.
+
+Tavsiya:
+- MVPda sodda bo'lishi kerak bo'lsa: price DecimalField ishlatish.
+- Payment integratsiya, commission, refund bo'lsa: price_minor integer ishlatish.
+
+2. MVP scope
+
+Bu loyiha Kwork bilan birga-bir clone emas. MVP faqat asosiy marketplace oqimini qamraydi:
+
+- user ro'yxatdan o'tadi
+- user login qiladi
+- user buyer sifatida xizmatlarni ko'radi
+- user seller bo'lishi mumkin
+- seller kwork yaratadi
+- buyer kwork bo'yicha order ochadi
+- buyer va seller order ichida yozishadi
+- seller ishni topshiradi
+- buyer orderni yakunlaydi
+
+MVPga kirmaydi:
+- online payment
+- escrow
+- refund
+- dispute
+- moderation queue
+- review/rating real hisoblash
+- notification system
+- portfolio
+- package matrix
+- extra options
+- buyer request/exchange
+- custom offer
+- support ticket
+
+3. Account flow
+
+3.1 Signup
+
+Endpoint:
+POST /api/auth/signup/
+
+User yuboradi:
+- username
+- email
+- password
+- first_name optional
+- last_name optional
+- phone optional
+- city optional
+
+System:
+- user yaratadi
+- password hash qiladi
+- token qaytaradi
+- user default buyer sifatida ishlaydi
+- is_seller false bo'ladi
+
+Response:
+- token
+- user data
+
+3.2 Login
+
+Endpoint:
+POST /api/auth/login/
+
+User username yoki email bilan login qiladi.
+
+Body:
+- login
+- password
+
+System:
+- login ichida @ bo'lsa email bo'yicha user topadi
+- aks holda username sifatida tekshiradi
+- token qaytaradi
+
+3.3 Logout
+
+Endpoint:
+POST /api/auth/logout/
+
+System:
+- user tokenini o'chiradi
+
+3.4 Me
+
+Endpoint:
+GET /api/auth/me/
+PATCH /api/auth/me/
+
+GET:
+- current user data qaytadi
+
+PATCH:
+- first_name
+- last_name
+- phone
+- city
+- avatar
+update qiladi
+
+4. Seller flow
+
+4.1 Buyer sellerga aylanadi
+
+Endpoint:
+POST /api/auth/become-seller/
+
+Body:
+- display_name
+- bio
+
+System:
+- user.is_seller = true qiladi
+- SellerProfile yaratadi yoki update qiladi
+- user response ichida seller_profile qaytadi
+
+4.2 Seller kwork yaratadi
+
+Endpoint:
+POST /api/kworks/
+
+Body:
+- category
+- title
+- slug
+- description
+- price yoki price_minor
+- currency
+- delivery_days
+- image optional
+- status draft yoki active
+
+Qoidalar:
+- faqat is_seller true user kwork yaratadi
+- seller faqat o'z kworkini update qiladi
+- seller slug bitta seller ichida unique bo'lishi kerak
+- draft public listingda ko'rinmaydi
+- active public listingda ko'rinadi
+- paused public listingda ko'rinmaydi
+
+4.3 Seller kworkni boshqaradi
+
+Seller qilishi mumkin:
+- draft yaratish
+- edit qilish
+- active qilish
+- paused qilish
+
+MVPda moderation yo'q. Seller active qilsa, public listingda chiqadi.
+
+5. Buyer flow
+
+5.1 Buyer categorylarni ko'radi
+
+Endpoint:
+GET /api/categories/
+GET /api/categories/tree/
+
+System:
+- faqat is_active categorylarni qaytaradi
+
+5.2 Buyer kworklarni ko'radi
+
+Endpoint:
+GET /api/kworks/
+
+Query params:
+- q
+- category
+- price_min
+- price_max
+- ordering
+
+System:
+- faqat active kworklarni qaytaradi
+- draft va paused kworklarni yashiradi
+
+5.3 Buyer kwork detail ko'radi
+
+Endpoint:
+GET /api/kworks/{id}/
+
+System:
+- public user faqat active kwork detail ko'radi
+- seller o'z draft kworkini ko'rishi mumkin bo'lishi kerak
+
+6. Order flow
+
+6.1 Buyer order ochadi
+
+Endpoint:
+POST /api/orders/
+
+Body:
+- kwork
+- requirements optional
+
+System:
+- kwork active ekanini tekshiradi
+- buyer o'z kworkini sotib olishini bloklaydi
+- seller kwork.seller dan olinadi
+- title_snapshot = kwork.title
+- price = kwork.price
+- currency = kwork.currency
+- status = new
+
+Nega snapshot kerak:
+- seller keyin kwork title yoki price o'zgartirsa ham orderdagi kelishilgan narx saqlanadi
+
+6.2 Buyer va seller order list/detail ko'radi
+
+Endpoint:
+GET /api/orders/
+GET /api/orders/{id}/
+
+Qoidalar:
+- buyer faqat o'z buyer_orderslarini ko'radi
+- seller faqat o'z seller_orderslarini ko'radi
+- begona user 403 yoki 404 oladi
+
+6.3 Order chat
+
+Endpoint:
+GET /api/orders/{id}/messages/
+POST /api/orders/{id}/messages/
+
+Body:
+- body
+
+Qoidalar:
+- faqat buyer va seller yozadi
+- begona user yozolmaydi
+- message order ichida saqlanadi
+
+6.4 Seller ishni boshlaydi
+
+MVPda alohida accept endpoint shart emas.
+
+Variant:
+- order yaratilganda status new
+- seller birinchi message yoki manual action bilan in_progress qilishi mumkin
+
+Keyingi bosqichda accept endpoint qo'shish mumkin:
+POST /api/orders/{id}/start/
+
+6.5 Seller delivery yuboradi
+
+Endpoint:
+POST /api/orders/{id}/deliver/
+
+Body:
+- message
+- file optional
+
+System:
+- faqat seller yuboradi
+- delivery record yaratadi
+- order.status = delivered qiladi
+
+6.6 Buyer orderni complete qiladi
+
+Endpoint:
+POST /api/orders/{id}/complete/
+
+System:
+- faqat buyer complete qiladi
+- order.status = completed qiladi
+
+MVPda:
+- earning yaratilmaydi
+- payment release qilinmaydi
+- review so'ralmaydi
+
+7. Statuslar
+
+Kwork status:
+- draft: seller tayyorlayapti, publicda yo'q
+- active: public listingda bor
+- paused: seller vaqtincha yashirgan
+
+Order status:
+- new: buyer order ochdi
+- in_progress: seller ishlayapti
+- delivered: seller topshirdi
+- completed: buyer qabul qildi
+- canceled: order bekor qilindi
+
+8. MVP database modeli
+
+Accounts:
+- User
+- SellerProfile
+
+Catalog:
+- Category
+
+Kworks:
+- Kwork
+
+Orders:
+- Order
+- OrderMessage
+- Delivery
+
+9. Keyingi versiyaga qoldirilgan qismlar
+
+V2 uchun:
+- Decimal yoki minor amount strategy yakuniy qaror
+- payment provider
+- escrow
+- refund
+- review
+- rating recalculation
+- seller dashboard stats
+- notifications
+- moderation
+- package basic/standard/premium
+- extra options
+- portfolio
+- buyer requests
+- custom offers
+
+10. MVP maqsad
+
+MVP maqsad: asosiy qiymatni tekshirish.
+
+Savol:
+"Buyer xizmat topib, sellerdan ish buyurtma qila oladimi?"
+
+Shu savolga javob beradigan minimal flow:
+signup -> become seller -> create kwork -> buyer finds kwork -> order -> chat -> delivery -> complete

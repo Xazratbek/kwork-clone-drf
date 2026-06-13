@@ -1,0 +1,512 @@
+KWORK CLONE BUSINESS LOGIC
+Versiya: 1.0
+Sana: 2026-06-13
+
+1. Platforma prinsipi
+
+Platforma tayyor fixed-price freelance xizmatlarni katalog orqali sotadi. Xizmat "kwork" deb ataladi. Buyer katalogdan xizmatni tanlaydi, package va extra optionlarni belgilaydi, to'lov qiladi. To'lov real pul oqimi emas: Click/Payme test mode yoki simulation. System order summasini "held funds" sifatida saqlaydi. Seller ishni topshiradi. Buyer approve qilsa order completed, sellerga earning yoziladi. Cancel/refund bo'lsa held funds buyerga qaytariladi.
+
+2. Kim nima qila oladi
+
+2.1 Guest
+- Public homepage ko'radi.
+- Public category, subcategory, kwork listing ko'radi.
+- Search/filter/sort ishlatadi.
+- Kwork detail, seller public profile, portfolio, review ko'radi.
+- Signup/signin qiladi.
+- Order, favorite, message, review, request yaratolmaydi.
+
+2.2 Buyer
+- Kwork favorite qiladi.
+- Package/extra tanlab order yaratadi.
+- Payment simulation qiladi.
+- Order requirements yuboradi.
+- Order chatda yozadi.
+- Delivery approve/revision/cancel/dispute qiladi.
+- Completed/canceled order uchun review yozadi.
+- Buyer request yaratadi.
+- Seller proposal/custom offer qabul/rad qiladi.
+- Support ticket ochadi.
+
+2.3 Seller
+- Seller profile yoqadi/to'ldiradi.
+- Kwork yaratadi, edit qiladi, pause/archive qiladi.
+- Package, extra, FAQ, media, portfolio boshqaradi.
+- Kworkni approvalga yuboradi.
+- Active orderni accept qiladi.
+- Order chatda yozadi.
+- Delivery yuboradi.
+- Revisionni bajaradi.
+- Buyer requestga proposal yuboradi.
+- Custom offer yuboradi.
+- Earnings va payout simulation ko'radi.
+
+2.4 Moderator
+- Pending kwork va buyer requestlarni approve/reject/request changes qiladi.
+- Report/dispute/support ticket ko'radi.
+- Review/content hide/delete qiladi.
+- Cancellation/refund dispute qaror qiladi.
+
+2.5 Admin
+- Hamma permission.
+- Category, commission, settings, badges, users boshqaradi.
+- Payment/refund simulationni tekshiradi.
+- Audit log ko'radi.
+
+3. Kwork yaratish oqimi
+
+1. Seller "Create kwork" bosadi.
+2. System seller profile active ekanini tekshiradi.
+3. System seller kwork limitini tekshiradi:
+   - first_order_completed_at yo'q bo'lsa max 20.
+   - birinchi completed orderdan keyin max 300.
+4. Seller title, category, overview, requirements, package, media, FAQ, tags kiritadi.
+5. Draft saqlanadi.
+6. Seller "Submit for review" bosadi.
+7. Validation:
+   - title servicega mos.
+   - category mos.
+   - kamida 1 package.
+   - price minimumdan past emas.
+   - delivery_days > 0.
+   - primary image mavjud.
+   - off-platform contact/payment so'zlari flag qilinadi.
+   - duplicate kwork ehtimoli tekshiriladi.
+8. Status pending_review.
+9. Moderator approve qilsa active/published.
+10. Moderator reject qilsa rejected + reason.
+11. Seller edit qilib qayta submit qiladi.
+
+4. Kwork moderation qoidalari
+
+Approve:
+- Xizmat bitta aniq service yoki bir-biriga bog'liq services set.
+- Title service mazmunini aniq bildiradi.
+- Description intelligible.
+- Package price/delivery/scope bir-biriga zid emas.
+- Media servicega mos, readable, contact info/watermark yo'q.
+- Category to'g'ri.
+- Extra optionlar main package bilan overlap qilmaydi.
+
+Reject:
+- Prohibited service.
+- Off-platform contact/payment.
+- Duplicate/copied content.
+- Contradictory price/delivery/scope.
+- Category mismatch.
+- Low-quality image/video.
+- Review so'rash/positive review evaziga bonus.
+
+Changes requested:
+- Mayda xato, typo, media, title/category tuzatish kerak.
+
+5. Search/listing logic
+
+Public listing faqat active kworklarni chiqaradi.
+
+Search ranking:
+1. Query exact title/tag match.
+2. Category relevance.
+3. Seller rating/positive reviews.
+4. Completed orders.
+5. Recent activity/online.
+6. Kwork's Choice/featured boost.
+7. Low cancellation/overdue penalty.
+
+Filters:
+- category/subcategory
+- price min/max
+- delivery_days
+- seller_level
+- seller_activity
+- positive_reviews
+- orders_in_progress
+- service includes attributes
+- tags
+
+Sort:
+- relevance
+- newest
+- price_low
+- price_high
+- rating
+- completed_orders
+- fastest_delivery
+
+6. Order yaratish oqimi
+
+1. Buyer active kwork detail ochadi.
+2. Package tanlaydi: Basic/Standard/Premium.
+3. Extra option tanlaydi.
+4. System summary ko'rsatadi:
+   - package price
+   - extras
+   - delivery days
+   - revisions
+   - total
+   - payment method
+5. Buyer "Order" bosadi.
+6. System tekshiradi:
+   - buyer authenticated.
+   - buyer seller emas.
+   - kwork active.
+   - package active.
+   - seller account active.
+7. Order draft/payment_pending yaratiladi.
+8. Payment init:
+   - click_test yoki payme_test.
+   - idempotency_key yaratiladi.
+9. Payment success callback:
+   - Payment succeeded.
+   - Order payment_status=paid.
+   - funds_status=held.
+   - Order status=seller_pending_acceptance yoki requirements_required.
+10. Buyer seller requirementsga javob beradi.
+11. Seller orderni accept qiladi.
+12. Deadline hisoblanadi:
+   accepted_at + package.delivery_days + selected_extras.extra_days.
+13. Order in_progress.
+
+7. Seller accept/start qoidasi
+
+- Paymentdan keyin seller 24 soat ichida orderni accept qilishi kerak.
+- Seller accept qilmasa:
+  - buyer cancel/refund qila oladi.
+  - system scheduled job auto_cancel qilishi mumkin.
+- Seller accept qilgandan keyin order deadline boshlanadi.
+- Seller active orderni asossiz rad qilsa seller rating/statusga negative impact.
+
+8. Requirements qoidasi
+
+- Kwork requirements_from_buyer bo'lsa buyer order bosqichida javob yuboradi.
+- Requirement yuborilmaguncha:
+  - seller start qilmasligi mumkin.
+  - deadline boshlanmasligi mumkin.
+- Buyer requirement yuborgach system order event yaratadi.
+- Seller requirement yetarli emas deb chatda so'rashi mumkin, lekin deadline policy aniq bo'lishi kerak. MVP: seller accept qilgan paytdan deadline boshlanadi.
+
+9. Order chat qoidasi
+
+- Faqat buyer, seller, moderator order chatni ko'radi.
+- Off-platform contact/payment so'zlari flag qilinadi.
+- File attach mumkin.
+- System events chat timelinega tushadi.
+- Blocked user active order ichida yozishi mumkin, yangi order boshlay olmaydi.
+
+10. Delivery oqimi
+
+1. Seller "Deliver order" bosadi.
+2. Delivery message/proof/files yuboradi.
+3. Order status=delivered.
+4. delivered_at va auto_approve_at hisoblanadi.
+5. Buyer action:
+   - approve
+   - request_revision
+   - cancel_request/dispute
+6. Approve:
+   - order completed.
+   - funds released.
+   - earning created/available.
+   - review window starts.
+7. Revision:
+   - revision_requested.
+   - seller qayta ishlaydi.
+   - yangi delivery version yuboradi.
+8. No action:
+   - auto approve scheduled job ishlaydi.
+
+11. Auto approve qoidasi
+
+- Deliverydan keyin buyer javob bermasa:
+  - total <= $150: 3 business days.
+  - total > $150: 5 business days.
+- Weekend extension:
+  - agar period ichida bir kundan ko'p weekend tushsa, +1 day.
+- MVP soddalashtirish:
+  - <= $150: delivered_at + 4 calendar days.
+  - > $150: delivered_at + 6 calendar days.
+- Cron due ordersni completed qiladi.
+
+12. Revision qoidasi
+
+- Buyer faqat deliverydan keyin revision so'raydi.
+- Reason required.
+- Revision order scope ichida bo'lishi kerak.
+- Package revision_count:
+  - null/unlimited bo'lsa cheksiz.
+  - count bo'lsa shu limitgacha free revision.
+- Agar delivery kwork/order requirementsga mos bo'lmasa, seller kerakli revisionlarni qo'shimcha to'lovsiz bajarishi kerak.
+- Scope tashqarisidagi ish uchun seller extra/custom offer yuborishi mumkin.
+
+13. Cancellation/refund qoidalari
+
+Buyer refund boshlashi mumkin:
+- Orderdan keyin 20 minut ichida.
+- Seller 24 soat ichida accept/start qilmasa.
+- Seller deadline o'tkazsa.
+- Seller va buyer mutual cancel qilsa.
+- Moderator delivery poor/incomplete deb topsa.
+
+Seller cancel so'rashi mumkin:
+- Buyer prohibited service talab qilsa.
+- Buyer kerakli materials bermasa.
+- Mutual agreement.
+- Force majeure/manual moderator review.
+
+Auto approval:
+- buyer_20_min_cancel -> auto refund.
+- seller_not_started_24h -> auto/refund eligible.
+- seller_overdue -> buyer so'rovi bilan refund.
+
+Manual moderation:
+- poor_quality.
+- incomplete_delivery.
+- prohibited_service.
+- IP/copyright issue.
+- aggressive behavior/off-platform payment.
+
+Canceled order:
+- funds_status=refunded.
+- payment refund transaction simulated.
+- seller earning yaratilmaydi yoki reversed.
+- review yozish mumkin, statusga qarab.
+
+14. Dispute logic
+
+Dispute ochiladi:
+- Buyer deliveryni incomplete/poor deb hisoblaydi.
+- Seller buyer revisionni scope tashqarida deb hisoblaydi.
+- Payment/refund muammosi.
+- Contact/payment/prohibited content violation.
+
+Moderator:
+- evidence ko'radi: order requirements, kwork snapshot, chat, delivery files.
+- decision:
+  - buyer wins -> refund/cancel.
+  - seller wins -> complete/release.
+  - revision required -> order revision_requested.
+  - partial manual note, lekin MVPda partial refund yo'q.
+
+15. Payment simulation
+
+15.1 Payment init
+- Buyer provider tanlaydi: Click test yoki Payme test.
+- Backend payment record initiated yaratadi.
+- Simulated redirect/invoice response qaytadi.
+
+15.2 Payment success
+- Provider callback yoki simulate-success endpoint.
+- Idempotency:
+  - provider_transaction_id oldin ishlangan bo'lsa duplicate ignore.
+  - amount/order/currency match shart.
+- Payment succeeded.
+- Order paid.
+- Ledger payment_hold.
+
+15.3 Payment fail
+- Payment failed.
+- Order payment_pending qoladi yoki canceled.
+- Buyer qayta urinishi mumkin.
+
+15.4 Refund
+- Cancellation approved bo'lsa refund record.
+- Provider test refund callback.
+- Payment status refunded.
+- Order funds_status=refunded.
+- Ledger refund.
+
+15.5 Earning release
+- Order completed bo'lsa:
+  - commission hisoblanadi.
+  - seller earning pending_clearance yoki available.
+  - Ledger payment_release + commission.
+- Payout test:
+  - seller payout request.
+  - admin approve/paid_test.
+
+16. Review logic
+
+- Review faqat completed/canceled orderdan keyin.
+- Buyer orderga bitta review.
+- Review window default 30 days.
+- Ba'zi category uchun 60 days config.
+- Positive review edit/delete 30 days.
+- Negative review edit/delete 2 days.
+- Rating seller_profile.rating_avg, kwork.rating_avg, positive_review_percentga ta'sir qiladi.
+- Seller reply berishi mumkin.
+- Review off-platform/contact/profanity bo'lsa moderationga tushadi.
+- Seller positive review talab qila olmaydi.
+
+17. Seller rating/level logic
+
+MVP rating:
+- rating_avg = published reviews average.
+- positive_review_percent = rating >= 4 count / total reviews.
+- completed_orders_count.
+- cancellation rate.
+- overdue rate.
+
+Seller levels:
+- New: default.
+- Advanced: min completed orders, min rating, low cancellation.
+- Professional: high completed orders, high rating, low overdue/cancel.
+
+Kwork badges:
+- Kwork's Choice: admin/manual yoki algorithmic:
+  - high rating.
+  - fast delivery.
+  - low cancellation.
+  - high conversion.
+- Featured: paid/admin/manual until date.
+
+18. Buyer request / Exchange logic
+
+1. Buyer request yaratadi:
+   - title, description, category, budget, delivery_days.
+2. Request pending_review.
+3. Moderator approve qilsa active.
+4. Seller request listni ko'radi.
+5. Seller proposal yuboradi:
+   - message, price, delivery_days, revision_count.
+6. Per request per seller 1 proposal.
+7. Buyer proposalni ko'radi:
+   - accept -> custom_offer/order flow.
+   - reject -> proposal rejected.
+8. Request close:
+   - buyer closes.
+   - proposal accepted.
+   - expires_at o'tadi.
+
+19. Custom offer logic
+
+- Seller buyerga chatdan yoki requestdan custom offer yuboradi.
+- Offer fields: title, description, price, delivery, revisions, items, expires_at.
+- Buyer accept qilsa:
+  - order created payment_pending.
+  - offer converted_to_order.
+- Buyer reject qilsa status rejected.
+- expires_at o'tsa expired.
+
+20. Portfolio logic
+
+- Seller portfolio work qo'shadi.
+- Work kwork/orderga bog'lanishi mumkin.
+- Buyer order deliverydan keyin seller portfolio uchun ishlatishiga explicit ruxsat berishi mumkin. MVPda visibility manual.
+- Moderator suspicious contentni hide qiladi.
+
+21. Notifications
+
+Buyer receives:
+- payment success/fail.
+- seller accepted.
+- message.
+- delivery submitted.
+- auto approve warning.
+- revision response.
+- order completed/canceled/refunded.
+- proposal/custom offer.
+
+Seller receives:
+- kwork approved/rejected.
+- new order paid.
+- requirements submitted.
+- message.
+- revision requested.
+- order approved/completed.
+- cancellation/dispute.
+- payout update.
+
+Admin/moderator receives:
+- moderation queue item.
+- dispute/report.
+- suspicious payment.
+
+22. Status transition matrix
+
+Kwork:
+- draft -> pending_review
+- pending_review -> active
+- pending_review -> rejected
+- active -> pending_review after major edit
+- active -> paused
+- active -> blocked
+- paused -> active
+- rejected -> draft/pending_review
+- any -> archived by owner/admin where allowed
+
+Order:
+- draft -> payment_pending
+- payment_pending -> paid/seller_pending_acceptance
+- seller_pending_acceptance -> in_progress
+- seller_pending_acceptance -> canceled
+- in_progress -> delivered
+- in_progress -> overdue
+- delivered -> completed
+- delivered -> revision_requested
+- delivered -> cancellation_requested/disputed
+- revision_requested -> in_progress
+- overdue -> delivered
+- overdue -> cancellation_requested/canceled
+- cancellation_requested -> canceled/disputed/in_progress
+- disputed -> completed/canceled/revision_requested
+
+Payment:
+- initiated -> pending
+- pending -> succeeded
+- pending -> failed
+- succeeded -> refunded
+
+BuyerRequest:
+- draft -> pending_review
+- pending_review -> active/rejected
+- active -> closed/expired/blocked
+
+CustomOffer:
+- draft -> sent
+- sent -> accepted/rejected/expired/canceled
+- accepted -> converted_to_order
+
+23. Security/business abuse checks
+
+- One account per email/phone/payment identity.
+- User cannot buy own service.
+- Off-platform payment/contact detection in kwork/chat/review.
+- Duplicate kwork detection.
+- Prohibited services keyword moderation.
+- Payment callback signature validation for real providers; MVP test secret.
+- Idempotency keys for payment/refund/order create.
+- Permission checks on every order/message.
+- Audit log on moderation/payment/order transitions.
+
+24. Admin dashboard kerak bo'ladigan ko'rsatkichlar
+
+- Pending kworks count.
+- Pending buyer requests count.
+- Active orders.
+- Overdue orders.
+- Disputes open.
+- Payment failures.
+- Refund total.
+- Completed GMV.
+- Seller earnings pending/available.
+- Top categories.
+- Flagged messages/content.
+
+25. Muhim edge caselar
+
+- Buyer payment success callback ikki marta keldi -> duplicate ignore.
+- Buyer order yaratib payment qilmasa -> payment_pending, timeout cancel.
+- Seller kworkni pause qildi, active orderlar davom etadi.
+- Kwork edited after order -> order snapshot eski shartlarni saqlaydi.
+- Buyer revisionni scope tashqarisida so'radi -> seller dispute/custom offer.
+- Seller deliveryni bo'sh yubordi -> buyer cancel/dispute.
+- Buyer approve qildi -> refund talab qila olmaydi, faqat support special case.
+- User blocked -> new orders yo'q, active orders yakunlanadi.
+- Category deactivated -> old active kworklar admin qaroriga ko'ra pause yoki hidden.
+
+26. Manbalar
+
+- Kwork homepage/category/detail kuzatuvlari: https://kwork.com/
+- Seller flow: https://kwork.com/for-sellers
+- Approval rules: https://kwork.com/kwork_approval_process
+- Terms/order/payment/review rules: https://kwork.com/terms_of_service
