@@ -17,7 +17,7 @@ class Kwork(TimeStampedUUIDModel):
     title = models.CharField(max_length=180)
     slug = models.SlugField(max_length=220)
     description = models.TextField()
-    price_minor = models.PositiveBigIntegerField()
+    price_minor = models.DecimalField(max_digits=10,decimal_places=2)
     currency = models.CharField(max_length=3, choices=Currency.choices, default=Currency.USD)
     delivery_days = models.PositiveIntegerField(default=1)
     image = models.ImageField(upload_to="kworks/", null=True, blank=True)
