@@ -1,6 +1,7 @@
 import secrets
 import logging
 from datetime import timedelta
+from urllib.parse import urlencode
 
 from django.conf import settings
 from django.core.mail import send_mail
@@ -21,7 +22,8 @@ def create_email_verification(user):
 
 def send_verification_email(user):
     verification = create_email_verification(user)
-    verify_url = f"{settings.FRONTEND_URL}/verify-email?token={verification.token}"
+    frontend_url = settings.FRONTEND_URL.rstrip("/")
+    verify_url = f"{frontend_url}/verify-email?{urlencode({"token": verification.token})}"
 
     try:
         send_mail(

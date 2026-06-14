@@ -1,27 +1,49 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
+  BadgeDollarSign,
   BriefcaseBusiness,
   Check,
   ChevronLeft,
   ChevronRight,
   Clock3,
+  Code2,
   Filter,
   Grid2X2,
+  Headphones,
   Heart,
   Loader2,
   LogOut,
   Menu,
   PackageCheck,
+  Palette,
   Search,
   Send,
   Sparkles,
+  TrendingUp,
+  Languages,
   UserRound,
   X,
 } from "lucide-react";
 import { api, auth } from "./api";
 
 const navItems = ["Design", "Development & IT", "Writing", "SEO", "Marketing", "Audio & Video", "Business"];
+
+const categoryShowcase = [
+  { title: "SEO & Web Traffic", aliases: ["SEO", "Traffic"], Icon: TrendingUp, tone: "blue" },
+  { title: "Digital Marketing & SMM", aliases: ["Marketing", "SMM", "Digital"], Icon: Sparkles, tone: "orange" },
+  { title: "Development & IT", aliases: ["Development", "Programming", "IT"], Icon: Code2, tone: "green" },
+  { title: "Design", aliases: ["Design"], Icon: Palette, tone: "pink" },
+  { title: "Business & Lifestyle", aliases: ["Business", "Lifestyle"], Icon: BadgeDollarSign, tone: "amber" },
+  { title: "Writing & Translations", aliases: ["Writing", "Translation"], Icon: Languages, tone: "teal" },
+  { title: "Audio & Video", aliases: ["Audio", "Video"], Icon: Headphones, tone: "cyan" },
+];
+
+function categoryMatches(category, showcase) {
+  const name = category?.name?.toLowerCase() || "";
+  return showcase.aliases.some((alias) => name.includes(alias.toLowerCase()));
+}
+
 const fallbackThumbs = [
   "linear-gradient(135deg, #15392f 0%, #d7ff64 100%)",
   "linear-gradient(135deg, #341d14 0%, #ffb84d 100%)",
@@ -115,12 +137,17 @@ function Header({ user, onAuth, onRoute, route, search, setSearch, onSearch }) {
 }
 
 function Landing({ categories, featured, onRoute, onAuth }) {
+  const showcaseCategories = categoryShowcase.map((item) => ({
+    ...item,
+    category: categories.find((category) => categoryMatches(category, item)),
+  }));
+
   return (
     <main>
       <section className="hero-section reveal">
         <div className="hero-copy">
           <h1>Freelance xizmatlarni tez top, buyurtma ber, natijani kuzat.</h1>
-          <p>Kwork uslubidagi MVP: katalog, filter, seller studio, order flow va JWT token refresh logikasi tayyor.</p>
+          <p>Minglab freelance xizmatlari ichidan keraklisini tanlang, xavfsiz buyurtma bering va ish jarayonini bir joyda kuzating.</p>
           <div className="hero-actions">
             <button className="primary-cta" onClick={() => onRoute("catalog")}>Browse marketplace <ArrowRight size={18} /></button>
             <button className="ghost-cta" onClick={() => onAuth("signup")}>Start as buyer</button>
@@ -151,21 +178,18 @@ function Landing({ categories, featured, onRoute, onAuth }) {
           <h2>Explore growing catalog</h2>
           <button onClick={() => onRoute("catalog")}>Open all <ArrowRight size={16} /></button>
         </div>
-        <div className="category-grid">
-          {categories.slice(0, 8).map((category, index) => (
-            <button className="category-card" key={category.id} onClick={() => onRoute("catalog", { category: category.id })}>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <strong>{category.name}</strong>
-              <small>{category.children?.length || 0} subcategories</small>
+        <div className="category-grid category-showcase">
+          {showcaseCategories.map(({ title, Icon, tone, category }) => (
+            <button
+              className={`category-card category-card-${tone}`}
+              key={title}
+              onClick={() => onRoute("catalog", category ? { category: category.id } : { search: title })}
+            >
+              <span className="category-icon"><Icon size={54} strokeWidth={2.4} /></span>
+              <strong>{category?.name || title}</strong>
             </button>
           ))}
         </div>
-      </section>
-
-      <section className="stats-band reveal">
-        <div><strong>{featured.length || 20}+</strong><span>active services loaded</span></div>
-        <div><strong>JWT</strong><span>auto refresh before expiry</span></div>
-        <div><strong>DRF</strong><span>current views only</span></div>
       </section>
 
       <section className="how-section reveal">
@@ -432,7 +456,7 @@ function AuthModal({ mode, setMode, onClose }) {
       <form className="auth-modal" onSubmit={submit}>
         <button type="button" className="drawer-close" onClick={onClose}><X /></button>
         <h2>{isSignup ? "Create account" : "Sign in"}</h2>
-        <p>Access and refresh tokens are stored locally and refreshed automatically.</p>
+        <p>{isSignup ? "Ro'yxatdan o'ting va emailingizga kelgan tasdiqlash linki orqali hisobingizni faollashtiring." : "Hisobingizga kirish uchun email yoki loginingizni kiriting."}</p>
         {isSignup && <input value={form.username} onChange={(event) => setForm({ ...form, username: event.target.value })} placeholder="Username" />}
         <input required value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} placeholder="Email or login" />
         {isSignup && (
@@ -487,12 +511,75 @@ function Loading() {
   return <div className="loading"><Loader2 className="spin" /> Loading API data...</div>;
 }
 
+function VerifyEmailPage({ reloadUser, onRoute }) {
+  const [state, setState] = useState({ loading: true, error: "", message: "" });
+  const token = new URLSearchParams(window.location.search).get("token");
+
+  useEffect(() => {
+    let active = true;
+
+    async function verify() {
+      if (!token) {
+        setState({ loading: false, error: "Tasdiqlash tokeni topilmadi.", message: "" });
+        return;
+      }
+
+      try {
+        const response = await api.verifyEmail(token);
+        if (!active) return;
+        await reloadUser();
+        setState({ loading: false, error: "", message: response.detail || "Email muvaffaqiyatli tasdiqlandi." });
+      } catch (error) {
+        if (!active) return;
+        setState({ loading: false, error: error.message, message: "" });
+      }
+    }
+
+    verify();
+    return () => { active = false; };
+  }, [token]);
+
+  return (
+    <main className="verify-page reveal">
+      <div className="verify-card">
+        {state.loading ? (
+          <>
+            <Loader2 className="spin" />
+            <h1>Email tasdiqlanmoqda...</h1>
+            <p>Iltimos, bir necha soniya kuting.</p>
+          </>
+        ) : state.error ? (
+          <>
+            <X />
+            <h1>Email tasdiqlanmadi</h1>
+            <p className="error">{state.error}</p>
+            <button className="primary-wide" onClick={() => onRoute("home")}>Bosh sahifaga qaytish</button>
+          </>
+        ) : (
+          <>
+            <Check />
+            <h1>Email tasdiqlandi</h1>
+            <p>{state.message}</p>
+            <button className="primary-wide" onClick={() => onRoute("catalog")}>Katalogni ko'rish</button>
+          </>
+        )}
+      </div>
+    </main>
+  );
+}
+
 function Empty({ title, text }) {
   return <div className="empty"><Sparkles /><h3>{title}</h3><p>{text}</p></div>;
 }
 
+function initialRoute() {
+  const pathRoute = window.location.pathname.replace(/^\/+|\/+$/g, "");
+  if (pathRoute === "verify-email") return "verify-email";
+  return window.location.hash.replace("#", "") || "home";
+}
+
 export default function App() {
-  const [route, setRoute] = useState(() => window.location.hash.replace("#", "") || "home");
+  const [route, setRoute] = useState(initialRoute);
   const [user, setUser] = useState(auth.get()?.user || null);
   const [authMode, setAuthMode] = useState(null);
   const [categories, setCategories] = useState([]);
@@ -570,7 +657,12 @@ export default function App() {
     if (nextRoute === "catalog") {
       setCatalog((prev) => ({ ...prev, filters: { ...prev.filters, ...params, page: 1 } }));
     }
-    window.location.hash = nextRoute;
+    if (nextRoute === "verify-email") {
+      window.history.pushState(null, "", "/verify-email");
+    } else {
+      if (window.location.pathname !== "/") window.history.pushState(null, "", "/");
+      window.location.hash = nextRoute;
+    }
     setRoute(nextRoute);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -606,6 +698,7 @@ export default function App() {
       {route === "studio" && <Studio categories={flatCategories} myKworks={myKworks} reloadMyKworks={loadMyKworks} />}
       {route === "orders" && <Orders orders={orders} reloadOrders={loadOrders} />}
       {route === "profile" && <Profile user={user} reloadUser={loadUser} />}
+      {route === "verify-email" && <VerifyEmailPage reloadUser={loadUser} onRoute={go} />}
       <footer className="footer">
         <span>Kworkforge MVP</span>
         <span>Auth · Catalog · Seller Studio · Orders</span>
