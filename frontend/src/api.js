@@ -133,6 +133,9 @@ export const api = {
       return data;
     });
   },
+  verifyEmail(token) {
+    return request("/api/auth/verify-email/", { method: "POST", body: JSON.stringify({ token }) });
+  },
   me() {
     return request("/api/auth/me/");
   },
