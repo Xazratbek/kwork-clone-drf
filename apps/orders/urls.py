@@ -6,11 +6,13 @@ from .views import (
     OrderDeliveryApiView,
     OrderListApiView,
     SellerOrderConfirmOrRejectApiView,
+    OrderDetailApiView
 )
 
 urlpatterns = [
     path("", OrderListApiView.as_view(), name="order-list"),
-    path("<uuid:order_id>/", BuyerOrderUpdateApiView.as_view(), name="order-detail"),
+    path("<uuid:uuid>/detail/",OrderDetailApiView.as_view()),
+    path("<uuid:order_id>/", BuyerOrderUpdateApiView.as_view(), name="order-update"),
     path("<uuid:order_id>/confirm/", SellerOrderConfirmOrRejectApiView.as_view(), name="order-confirm"),
     path("<uuid:order_id>/deliver/", OrderDeliveryApiView.as_view(), name="order-deliver"),
     path("kworks/<uuid:k_id>/order/", OrderCreateApiView.as_view(), name="order-create"),

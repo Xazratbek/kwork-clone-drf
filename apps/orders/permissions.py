@@ -4,9 +4,6 @@ from .models import Order
 
 
 class IsOrderParticipant(BasePermission):
-    def _is_staff(self, user):
-        return bool(user and user.is_authenticated and (user.is_staff or user.is_superuser))
-
     def _get_order_id(self, view):
         return view.kwargs.get("order_id") or view.kwargs.get("pk") or view.kwargs.get("id")
 
@@ -21,9 +18,6 @@ class IsOrderParticipant(BasePermission):
         if not (user and user.is_authenticated):
             return False
 
-        if self._is_staff(user):
-            return True
-
         order_id = self._get_order_id(view)
         if not order_id:
             return True
@@ -34,8 +28,6 @@ class IsOrderParticipant(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         user = request.user
-        if self._is_staff(user):
-            return True
         return bool(user and user.is_authenticated and self._is_allowed_user(user, obj))
 
 
@@ -45,9 +37,6 @@ class IsOrderBuyer(IsOrderParticipant):
         if not (user and user.is_authenticated):
             return False
 
-        if self._is_staff(user):
-            return True
-
         order_id = self._get_order_id(view)
         if not order_id:
             return True
@@ -56,8 +45,6 @@ class IsOrderBuyer(IsOrderParticipant):
 
     def has_object_permission(self, request, view, obj):
         user = request.user
-        if self._is_staff(user):
-            return True
         return bool(user and user.is_authenticated and obj.buyer_id == user.id)
 
 
@@ -67,9 +54,6 @@ class IsOrderSeller(IsOrderParticipant):
         if not (user and user.is_authenticated):
             return False
 
-        if self._is_staff(user):
-            return True
-
         order_id = self._get_order_id(view)
         if not order_id:
             return True
@@ -78,10 +62,6 @@ class IsOrderSeller(IsOrderParticipant):
 
     def has_object_permission(self, request, view, obj):
         user = request.user
-        if self._is_staff(user):
-            return True
         return bool(user and user.is_authenticated and obj.seller_id == user.id)
 
 
-class IsBuyer(IsOrderBuyer):
-    pass

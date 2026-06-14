@@ -1,29 +1,31 @@
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
 from .serializers import OrderCreateSerializer, OrderSerializer, OrderUpdateSerializer, OrderDeliverySerializer
-from .models import  OrderStatus, Order, OrderEvent, EventType
+from .models import  OrderStatus, Order, OrderMessage, OrderEvent, EventType
 from .utility import send_message
-from .permissions import IsBuyer
+from .permissions import IsOrderBuyer, IsOrderParticipant
 from django.shortcuts import get_object_or_404
 from apps.kworks.models import Kwork, KworkStatus
 from apps.kworks.permissions import IsSeller
 from django.db import transaction
 
 class OrderCreateApiView(APIView):
-    permission_classes = [IsBuyer]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
-    def post(self, request, k_id):
-        kwork = get_object_or_404(Kwork, pk = k_id)
-        if kwork.status != KworkStatus.ACTIVE:
-            raise ValidationError("Bu kwork aktiv emas")
-        if kwork.seller ==  request.user:
-            raise ValidationError("Siz o'zingizni kworkingizga zakaz bera olmaysiz")
-
+    def post(self, request):
         serializer = OrderCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        kwork = get_object_or_404(Kwork, pk = serializer.validated_data['kwork'])
+        if kwork.status != KworkStatus.ACTIVE:
+            raise ValidationError(detail="Bu kwork aktiv emas")
+        if kwork.seller ==  request.user:
+            raise ValidationError(detail="Siz o'zingizni kworkingizga zakaz bera olmaysiz")
+        
 
         with transaction.atomic():
             order = serializer.save(
@@ -36,14 +38,12 @@ class OrderCreateApiView(APIView):
 
             send_message(order=order, sender = request.user, msg = "Sizga zakaz tushdi")
             OrderEvent.objects.create(order = order, event_type = EventType.CREATED, actor = request.user, description = "Yangi zakaz yaratilindi")
-
-
             return Response(OrderCreateSerializer(order).data, status=status.HTTP_201_CREATED)
 
 
 class OrderListApiView(APIView):
-    permission_classes = [IsAuthenticated]
-
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    
     def get(self, request):
         if request.user.is_seller:
             my_orders = Order.objects.filter(seller = request.user)
@@ -60,8 +60,16 @@ class OrderListApiView(APIView):
         return Response(serializer.data)
 
 
+class OrderDetailApiView(RetrieveAPIView):
+    permission_classes = [IsOrderParticipant, IsAdminUser]
+    serializer_class = OrderSerializer
+    queryset = Order.objects.all()
+    lookup_field = id
+    lookup_url_kwarg = 'uuid'
+
+
 class BuyerOrderUpdateApiView(APIView):
-    permission_classes = [IsBuyer]
+    permission_classes = [IsOrderBuyer]
 
     def patch(self, request, order_id):
         order = get_object_or_404(Order, pk = order_id, buyer = request.user)
