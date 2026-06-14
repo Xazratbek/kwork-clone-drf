@@ -9,10 +9,10 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'parent', 'name', 'slug', 'is_active', 'sort_order', 'children']
-        read_only_fields = ['slug'] 
+        read_only_fields = ['slug']
 
     def get_children(self, obj):
-        if obj.categories.exists():
-            children_queryset = obj.categories.all()
+        if obj.children.exists():
+            children_queryset = obj.children.all()
             serializer = CategorySerializer(children_queryset, many=True, context=self.context)
             return serializer.data

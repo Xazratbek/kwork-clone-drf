@@ -28,6 +28,7 @@ class KworkDetailView(RetrieveAPIView):
     queryset = Kwork.objects.all().select_related('category','seller')
     lookup_url_kwarg = 'uuid'
     lookup_field = 'id'
+    permission_classes = []
 
 class PauseKworkView(APIView):
     permission_classes = [IsSeller]
@@ -63,12 +64,11 @@ class ActivateKworkView(APIView):
 class KworkListView(ListAPIView):
     pagination_class = KworkListPagination
     serializer_class = KworkListSerializer
-    filter_backends = [DjangoFilterBackend,SearchFilter, OrderingFilter]
+    filter_backends = [DjangoFilterBackend,SearchFilter]
     filterset_fields = ['category','currency','delivery_days']
     search_fields = ['title','description']
-    ordering_fields = ['price_minor', 'created_at', 'id']
     ordering = ['-id']
-
+    permission_classes = []
 
     def get_queryset(self):
         return Kwork.objects.filter(status=KworkStatus.ACTIVE).select_related('seller','category')

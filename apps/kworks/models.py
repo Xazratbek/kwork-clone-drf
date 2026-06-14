@@ -30,3 +30,52 @@ class Kwork(TimeStampedUUIDModel):
 
     def __str__(self) -> str:
         return self.title
+
+
+class KworkImage(TimeStampedUUIDModel):
+    kwork = models.ForeignKey(Kwork, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="kworks/images/")
+    alt_text = models.CharField(max_length=255, blank=True)
+    is_primary = models.BooleanField(default=False)
+    sort_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["sort_order"]
+        verbose_name = "Kwork Image"
+
+    def __str__(self) -> str:
+        return f"{self.kwork.title} - Image {self.sort_order}"
+
+
+class KworkFAQ(TimeStampedUUIDModel):
+    kwork = models.ForeignKey(Kwork, on_delete=models.CASCADE, related_name="faqs")
+    question = models.CharField(max_length=500)
+    answer = models.TextField()
+    sort_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["sort_order"]
+        verbose_name = "Kwork FAQ"
+        verbose_name_plural = "Kwork FAQs"
+
+    def __str__(self) -> str:
+        return f"{self.kwork.title} - FAQ {self.sort_order}"
+
+
+class Favorite(TimeStampedUUIDModel):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="favorites"
+    )
+    kwork = models.ForeignKey(Kwork, on_delete=models.CASCADE, related_name="favorites")
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Favorite"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "kwork"], name="unique_favorite_per_user"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user.username} - {self.kwork.title}"
