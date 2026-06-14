@@ -4,7 +4,6 @@ from django.db import models
 from apps.core.models import Currency, TimeStampedUUIDModel
 from apps.kworks.models import Kwork
 
-
 class OrderStatus(models.TextChoices):
     NEW = "new", "New"
     IN_PROGRESS = "in_progress", "In progress"
@@ -35,6 +34,7 @@ class OrderMessage(TimeStampedUUIDModel):
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="order_messages")
     receiver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="received_messages")
     body = models.TextField()
+    file = models.FileField(upload_to="order_requirements/", null=True, blank=True)
 
     class Meta:
         ordering = ["created_at"]
@@ -119,18 +119,18 @@ class RevisionRequest(TimeStampedUUIDModel):
         return f"Revision for {self.order} ({self.status})"
 
 
-class OrderRequirement(TimeStampedUUIDModel):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_requirements")
-    question = models.TextField()
-    answer_text = models.TextField(blank=True)
-    file = models.FileField(upload_to="order_requirements/", null=True, blank=True)
+# class OrderRequirement(TimeStampedUUIDModel):
+#     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_requirements")
+#     question = models.TextField()
+#     answer_text = models.TextField(blank=True)
+#     file = models.FileField(upload_to="order_requirements/", null=True, blank=True)
 
-    class Meta:
-        ordering = ["created_at"]
-        verbose_name = "Order Requirement"
+#     class Meta:
+#         ordering = ["created_at"]
+#         verbose_name = "Order Requirement"
 
-    def __str__(self) -> str:
-        return f"Requirement for {self.order}"
+#     def __str__(self) -> str:
+#         return f"Requirement for {self.order}"
 
 
 class MessageAttachment(TimeStampedUUIDModel):

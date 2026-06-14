@@ -1,11 +1,11 @@
 from django.contrib import admin
 
-from .models import Delivery, Order, OrderMessage, OrderEvent, RevisionRequest, OrderRequirement, MessageAttachment
+from .models import Delivery, Order, OrderMessage, OrderEvent, RevisionRequest, MessageAttachment
 
 
-class OrderRequirementInline(admin.TabularInline):
-    model = OrderRequirement
-    extra = 0
+# class OrderRequirementInline(admin.TabularInline):
+#     model = OrderRequirement
+#     extra = 0
 
 
 class OrderEventInline(admin.TabularInline):
@@ -35,7 +35,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ("status", "currency", "created_at")
     search_fields = ("title_snapshot", "buyer__username", "seller__username")
     readonly_fields = ("created_at", "updated_at")
-    inlines = [OrderRequirementInline, OrderEventInline, OrderMessageInline, DeliveryInline]
+    inlines = [OrderEventInline, OrderMessageInline, DeliveryInline]
 
 
 @admin.register(OrderMessage)
@@ -65,10 +65,10 @@ class RevisionRequestAdmin(admin.ModelAdmin):
     search_fields = ("order__title_snapshot", "buyer__username")
 
 
-@admin.register(OrderRequirement)
-class OrderRequirementAdmin(admin.ModelAdmin):
-    list_display = ("id", "order", "created_at")
-    search_fields = ("order__title_snapshot",)
+# @admin.register(OrderRequirement)
+# class OrderRequirementAdmin(admin.ModelAdmin):
+#     list_display = ("id", "order", "created_at")
+#     search_fields = ("order__title_snapshot",)
 
 
 @admin.register(MessageAttachment)

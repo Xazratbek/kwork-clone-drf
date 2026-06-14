@@ -7,4 +7,4 @@ class KworkFilter(filters.FilterSet):
 
     class Meta:
         model = Kwork
-        fields = ['category', 'currency']
+        fields = ['category', 'currency','price_minor']

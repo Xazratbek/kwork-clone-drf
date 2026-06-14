@@ -8,6 +8,7 @@ from .permissions import IsSeller
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 from rest_framework.filters import SearchFilter
 from .paginations import KworkListPagination
+from .filters import KworkFilter
 
 class KworkCreateView(CreateAPIView):
     permission_classes = [IsSeller]
@@ -65,8 +66,9 @@ class KworkListView(ListAPIView):
     pagination_class = KworkListPagination
     serializer_class = KworkListSerializer
     filter_backends = [DjangoFilterBackend,SearchFilter]
-    filterset_fields = ['category','currency','delivery_days']
+    filterset_fields = ['category','currency','delivery_days','price_minor']
     search_fields = ['title','description']
+    filterset_class = KworkFilter
     ordering = ['-id']
     permission_classes = []
 
