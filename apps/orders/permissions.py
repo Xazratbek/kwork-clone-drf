@@ -4,8 +4,6 @@ from .models import Order
 
 
 class IsOrderParticipant(BasePermission):
-    """Allow only an order's buyer, seller, or staff users."""
-
     def _is_staff(self, user):
         return bool(user and user.is_authenticated and (user.is_staff or user.is_superuser))
 
@@ -42,8 +40,6 @@ class IsOrderParticipant(BasePermission):
 
 
 class IsOrderBuyer(IsOrderParticipant):
-    """Allow only an order's buyer or staff users."""
-
     def has_permission(self, request, view):
         user = request.user
         if not (user and user.is_authenticated):
@@ -66,8 +62,6 @@ class IsOrderBuyer(IsOrderParticipant):
 
 
 class IsOrderSeller(IsOrderParticipant):
-    """Allow only an order's seller or staff users."""
-
     def has_permission(self, request, view):
         user = request.user
         if not (user and user.is_authenticated):
