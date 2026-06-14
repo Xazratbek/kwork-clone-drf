@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404 
+from django.shortcuts import render, get_object_or_404
 from .models import  Category
 from rest_framework.exceptions import ValidationError
 from rest_framework import status
@@ -12,8 +12,6 @@ class CategoryListAPIView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        categories = Category.objects.filter(is_active=True).prefetch_related("children")
+        categories = Category.objects.filter(is_active=True,parent__isnull=True).prefetch_related("children")
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
-    
-
