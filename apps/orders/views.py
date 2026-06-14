@@ -7,12 +7,11 @@ from rest_framework.views import APIView
 from .serializers import OrderCreateSerializer, OrderSerializer, OrderUpdateSerializer, OrderDeliverySerializer
 from .models import  OrderStatus, Order, OrderMessage
 from .utility import send_message
-from .permissions import IsBuyer
+from .permissions import IsOrderBuyer, IsOrderParticipant, IsOrderSeller
 from django.shortcuts import get_object_or_404
 from apps.kworks.models import Kwork, KworkStatus
-from apps.kworks.permissions import IsSeller
 class OrderCreateApiView(APIView):
-    permission_classes = [IsBuyer]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, k_id):
         kwork = get_object_or_404(Kwork, pk = k_id)
@@ -56,10 +55,20 @@ class OrderListApiView(APIView):
 
 
 class BuyerOrderUpdateApiView(APIView):
-    permission_classes = [IsBuyer]
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [IsOrderParticipant()]
+        return [IsOrderBuyer()]
+
+    def get(self, request, order_id):
+        order = get_object_or_404(Order, pk = order_id)
+        self.check_object_permissions(request, order)
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)
 
     def patch(self, request, order_id):
-        order = get_object_or_404(Order, pk = order_id, buyer = request.user)
+        order = get_object_or_404(Order, pk = order_id)
+        self.check_object_permissions(request, order)
 
         if order.status != OrderStatus.NEW:
             raise ValidationError("Bu zakazni o'zgartira olmaysiz")
@@ -71,10 +80,11 @@ class BuyerOrderUpdateApiView(APIView):
 
 
 class SellerOrderConfirmOrRejectApiView(APIView):
-    permission_classes = [IsSeller]
+    permission_classes = [IsOrderSeller]
 
     def post(self, request, order_id):
-        order = get_object_or_404(Order, pk = order_id, seller = request.user)
+        order = get_object_or_404(Order, pk = order_id)
+        self.check_object_permissions(request, order)
 
         status = request.data.get("status", "")
 
@@ -95,16 +105,18 @@ class SellerOrderConfirmOrRejectApiView(APIView):
 
 
 class OrderDeliveryApiView(APIView):
-    permission_classes = [IsSeller]
+    permission_classes = [IsOrderSeller]
 
-    def post(self, request):
-        serializer = serializer = OrderDeliverySerializer(data=request.data)
+    def post(self, request, order_id):
+        order = get_object_or_404(Order, pk = order_id)
+        self.check_object_permissions(request, order)
+
+        data = request.data.copy()
+        data["order_id"] = order_id
+        serializer = OrderDeliverySerializer(data=data)
         serializer.is_valid(raise_exception=True)
 
         order =  serializer.validated_data["order"]
-
-        if order.seller != request.user:
-            raise ValidationError("Bu sizning zakazingiz emas")
 
         if order.status != OrderStatus.IN_PROGRESS:
             raise ValidationError(" Faqat statusi in_progeress bo'lgan zakazlarni topshirishingiz mumkin")
