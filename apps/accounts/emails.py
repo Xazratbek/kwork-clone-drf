@@ -23,7 +23,7 @@ def create_email_verification(user):
 def send_verification_email(user):
     verification = create_email_verification(user)
     frontend_url = settings.FRONTEND_URL.rstrip("/")
-    verify_url = f"{frontend_url}/verify-email?{urlencode({"token": verification.token})}"
+    verify_url = f"{frontend_url}/verify-email?{urlencode({'token': verification.token})}"
 
     try:
         send_mail(

@@ -123,18 +123,18 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-# Email configuration - Development uchun console backend, Production uchun SMTP
-if DEBUG:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-else:
-    EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
-    EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
-    EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
-    EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "1") == "1"
-    EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
-    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
-
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@kwork.com")
+# Email configuration. Gmail app password bilan yuborish uchun .env da
+# EMAIL_HOST_PASSWORD ni Google App Password qiymatiga tenglang.
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND",
+    "django.core.mail.backends.console.EmailBackend" if DEBUG else "django.core.mail.backends.smtp.EmailBackend",
+)
+EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "1") == "1"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "xazratbek123@gmail.com")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER or "noreply@kwork.com")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
 # CORS — frontend API ga ulanishi uchun (FRONTEND_URL yoki CORS_ALLOWED_ORIGINS)
