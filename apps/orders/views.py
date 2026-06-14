@@ -11,7 +11,6 @@ from .permissions import IsBuyer
 from django.shortcuts import get_object_or_404
 from apps.kworks.models import Kwork, KworkStatus
 from apps.kworks.permissions import IsSeller
-
 class OrderCreateApiView(APIView):
     permission_classes = [IsBuyer]
 
@@ -26,35 +25,35 @@ class OrderCreateApiView(APIView):
         serializer.is_valid(raise_exception=True)
 
         order = serializer.save(
-            buyer=request.user, 
-            seller = kwork.seller, 
-            title_snapshot = kwork.title, 
-            price_minor = kwork.price_minor, 
+            buyer=request.user,
+            seller = kwork.seller,
+            title_snapshot = kwork.title,
+            price_minor = kwork.price_minor,
             status = OrderStatus.NEW
             )
-        
+
         send_message(order=order, seller = request.user, msg = "Sizga zakaz tushdi")
         return Response(OrderCreateSerializer(order).data, status=status.HTTP_201_CREATED)
 
 
 class OrderListApiView(APIView):
     permission_classes = [IsAuthenticated]
-    
+
     def get(self, request):
         if request.user.is_seller:
             my_orders = Order.objects.filter(seller = request.user)
         else:
             my_orders = Order.objects.filter(buyer = request.user)
-        
+
         if not my_orders.exists():
             return Response({
                 "message":"Zakaz topilmadi"
             })
-        
+
         serializer = OrderSerializer(my_orders, many = True)
 
         return Response(serializer.data)
-    
+
 
 class BuyerOrderUpdateApiView(APIView):
     permission_classes = [IsBuyer]
@@ -64,37 +63,37 @@ class BuyerOrderUpdateApiView(APIView):
 
         if order.status != OrderStatus.NEW:
             raise ValidationError("Bu zakazni o'zgartira olmaysiz")
-        
+
         serializer = OrderUpdateSerializer(order, data = request.data, partial = True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
-        
+
 
 class SellerOrderConfirmOrRejectApiView(APIView):
     permission_classes = [IsSeller]
 
     def post(self, request, order_id):
         order = get_object_or_404(Order, pk = order_id, seller = request.user)
-        
+
         status = request.data.get("status", "")
-        
+
         if status == "in_progress" and order.status != OrderStatus.NEW:
             raise ValidationError("Faqat statusi New bo'lgan zakazlarni qabul qilishingiz mumkin")
         if status == "rejected" and order.status != OrderStatus.NEW:
             raise ValidationError("Faqat statusi New bo'lgan zakazlarni qaytarishingiz mumkin")
-        
+
         if status == "in_progress" and order.status == OrderStatus.NEW:
             order.status = status
             order.save()
             return Response({"message":"Zakaz qabul qilindi"})
-        
+
         if status == "rejected" and order.status == OrderStatus.NEW:
             order.status = status
             order.save()
             return Response({"message":"Zakaz qaytarildi"})
-        
-        
+
+
 class OrderDeliveryApiView(APIView):
     permission_classes = [IsSeller]
 
@@ -103,30 +102,15 @@ class OrderDeliveryApiView(APIView):
         serializer.is_valid(raise_exception=True)
 
         order =  serializer.validated_data["order"]
-        
+
         if order.seller != request.user:
             raise ValidationError("Bu sizning zakazingiz emas")
 
         if order.status != OrderStatus.IN_PROGRESS:
             raise ValidationError(" Faqat statusi in_progeress bo'lgan zakazlarni topshirishingiz mumkin")
-        
+
         order.status = OrderStatus.DELIVERED
         order.save()
         serializer.save()
         send_message(order=order, sender=request.user, msg="Zakazingiz bajarildim marhamat tanishib chiqing!")
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-
-   
-
-
-
-
-
-
-
-
-
-
-
