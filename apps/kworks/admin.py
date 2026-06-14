@@ -15,7 +15,7 @@ class KworkFAQInline(admin.TabularInline):
 
 @admin.register(Kwork)
 class KworkAdmin(admin.ModelAdmin):
-    list_display = ("title", "seller", "category", "price_minor", "currency", "delivery_days", "status")
+    list_display = ('id',"title", "seller", "category", "price_minor", "currency", "delivery_days", "status")
     list_filter = ("status", "currency", "category")
     search_fields = ("title", "description", "seller__username", "seller__email")
     prepopulated_fields = {"slug": ("title",)}

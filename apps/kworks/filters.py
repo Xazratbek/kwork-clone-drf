@@ -1,5 +1,5 @@
 from .models import Kwork
-from django_filters.rest_framework import filters
+from django_filters import rest_framework as filters
 
 class KworkFilter(filters.FilterSet):
     price_min = filters.NumberFilter(field_name="price_minor", lookup_expr='gte')
