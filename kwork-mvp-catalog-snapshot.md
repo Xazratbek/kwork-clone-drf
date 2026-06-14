@@ -1,0 +1,76 @@
+- generic [ref=e2] [box=0,0,1440,3186]:
+  - banner [ref=e101] [box=0,0,1440,171]:
+    - generic [ref=e102] [box=0,0,1440,34]:
+      - generic [ref=e103] [box=482,10,337,14]: Marketplace MVP runs on current Django views only.
+      - button "Browse services" [ref=e104] [cursor=pointer] [box=831,7,127,21]
+    - generic [ref=e105] [box=100,34,1240,84]:
+      - button "Kwork MVP home" [ref=e106] [cursor=pointer] [box=120,57,159,38]:
+        - generic [ref=e107] [box=126,58,36,36]: K
+        - generic [ref=e108] [box=172,67,101,18]: Kworkforge
+      - generic [ref=e109] [box=297,49,844,54]:
+        - img [ref=e110] [box=314,67,18,18]
+        - textbox "Try \"telegram bot\" or \"logo\"" [ref=e113] [box=342,55,685,42]
+        - button "Search" [ref=e114] [cursor=pointer] [box=1038,56,97,40]
+      - navigation [ref=e115] [box=1160,57,160,38]:
+        - button "Sign in" [ref=e116] [cursor=pointer] [box=1160,57,70,38]
+        - button "Join free" [ref=e117] [cursor=pointer] [box=1237,57,83,38]
+    - generic [ref=e118] [box=100,118,1240,52]:
+      - button "Design" [ref=e119] [cursor=pointer] [box=120,118,72,38]
+      - button "Development & IT" [ref=e120] [cursor=pointer] [box=200,118,142,38]
+      - button "Writing" [ref=e121] [cursor=pointer] [box=349,118,73,38]
+      - button "SEO" [ref=e122] [cursor=pointer] [box=430,118,55,38]
+      - button "Marketing" [ref=e123] [cursor=pointer] [box=493,118,92,38]
+      - button "Audio & Video" [ref=e124] [cursor=pointer] [box=592,118,117,38]
+      - button "Business" [ref=e125] [cursor=pointer] [box=718,118,86,38]
+  - main [ref=e126] [box=100,171,1240,2932]:
+    - complementary [ref=e127] [box=100,205,292,472]:
+      - generic [ref=e128] [box=117,222,258,18]:
+        - img [ref=e129] [box=117,222,18,18]
+        - text: Filters
+      - generic [ref=e131] [box=117,254,258,63]:
+        - text: Category
+        - combobox "Category" [ref=e132] [box=117,275,258,42]
+      - generic [ref=e133] [box=117,331,258,63]:
+        - text: Search
+        - textbox "Search" [ref=e134] [box=117,352,258,42]:
+          - /placeholder: title or description
+      - generic [ref=e135] [box=117,408,258,63]:
+        - generic [ref=e136] [box=117,408,124,63]
+        - generic [ref=e138] [box=251,408,124,63]
+      - generic [ref=e140] [box=117,485,258,63]:
+        - generic [ref=e141] [box=117,485,124,63]
+        - generic [ref=e143] [box=251,485,124,63]
+      - button "Apply filters" [ref=e145] [cursor=pointer] [box=117,562,258,46]
+      - button "Reset" [ref=e146] [cursor=pointer] [box=117,622,64,38]
+    - generic [ref=e147] [box=414,205,926,2828]:
+      - generic [ref=e148] [box=414,205,926,77]:
+        - generic [ref=e149] [box=414,205,579,77]
+        - generic [ref=e152] [box=1262,244,78,38]
+      - generic [ref=e155] [box=414,302,926,2669]:
+        - article [ref=e156] [box=414,302,298,368]
+        - article [ref=e175] [box=728,302,298,368]
+        - article [ref=e193] [box=1042,302,298,368]
+        - article [ref=e212] [box=414,686,298,368]
+        - article [ref=e231] [box=728,686,298,368]
+        - article [ref=e250] [box=1042,686,298,368]
+        - article [ref=e269] [box=414,1069,298,368]
+        - article [ref=e288] [box=728,1069,298,368]
+        - article [ref=e307] [box=1042,1069,298,368]
+        - article [ref=e326] [box=414,1453,298,368]
+        - article [ref=e345] [box=728,1453,298,368]
+        - article [ref=e364] [box=1042,1453,298,368]
+        - article [ref=e383] [box=414,1836,298,368]
+        - article [ref=e402] [box=728,1836,298,368]
+        - article [ref=e421] [box=1042,1836,298,368]
+        - article [ref=e440] [box=414,2220,298,368]
+        - article [ref=e459] [box=728,2220,298,368]
+        - article [ref=e478] [box=1042,2220,298,368]
+        - article [ref=e497] [box=414,2603,298,368]
+        - article [ref=e516] [box=728,2603,298,368]
+      - generic [ref=e535] [box=414,2995,926,38]:
+        - button "Previous" [disabled] [ref=e536] [box=752,2995,102,38]
+        - generic [ref=e539] [box=866,3005,49,18]: Page 1
+        - button "Next" [ref=e540] [cursor=pointer] [box=926,2995,76,38]
+  - contentinfo [ref=e543] [box=100,3103,1240,83]:
+    - generic [ref=e544] [box=100,3138,96,14]: Kworkforge MVP
+    - generic [ref=e545] [box=1125,3138,215,14]: Auth · Catalog · Seller Studio · Orders

@@ -1,0 +1,73 @@
+- generic [ref=e2] [box=0,0,1440,2126]:
+  - banner [ref=e3] [box=0,0,1440,171]:
+    - generic [ref=e4] [box=0,0,1440,34]:
+      - generic [ref=e5] [box=482,10,337,14]: Marketplace MVP runs on current Django views only.
+      - button "Browse services" [ref=e6] [cursor=pointer] [box=831,7,127,21]
+    - generic [ref=e7] [box=100,34,1240,84]:
+      - button "Kwork MVP home" [ref=e8] [cursor=pointer] [box=120,57,159,38]:
+        - generic [ref=e9] [box=126,58,36,36]: K
+        - generic [ref=e10] [box=172,67,101,18]: Kworkforge
+      - generic [ref=e11] [box=297,49,844,54]:
+        - img [ref=e12] [box=314,67,18,18]
+        - textbox "Try \"telegram bot\" or \"logo\"" [ref=e15] [box=342,55,685,42]
+        - button "Search" [ref=e16] [cursor=pointer] [box=1038,56,97,40]
+      - navigation [ref=e17] [box=1160,57,160,38]:
+        - button "Sign in" [ref=e18] [cursor=pointer] [box=1160,57,70,38]
+        - button "Join free" [ref=e19] [cursor=pointer] [box=1237,57,83,38]
+    - generic [ref=e20] [box=100,118,1240,52]:
+      - button "Design" [ref=e21] [cursor=pointer] [box=120,118,72,38]
+      - button "Development & IT" [ref=e22] [cursor=pointer] [box=200,118,142,38]
+      - button "Writing" [ref=e23] [cursor=pointer] [box=349,118,73,38]
+      - button "SEO" [ref=e24] [cursor=pointer] [box=430,118,55,38]
+      - button "Marketing" [ref=e25] [cursor=pointer] [box=493,118,92,38]
+      - button "Audio & Video" [ref=e26] [cursor=pointer] [box=592,118,117,38]
+      - button "Business" [ref=e27] [cursor=pointer] [box=718,118,86,38]
+  - main [ref=e28] [box=100,171,1240,1802]:
+    - generic [ref=e29] [box=100,171,1240,858]:
+      - generic [ref=e30] [box=100,291,567,618]:
+        - heading "Freelance xizmatlarni tez top, buyurtma ber, natijani kuzat." [level=1] [ref=e31] [box=100,291,567,467]
+        - paragraph [ref=e32] [box=100,779,567,56]: "Kwork uslubidagi MVP: katalog, filter, seller studio, order flow va JWT token refresh logikasi tayyor."
+        - generic [ref=e33] [box=100,863,567,46]
+      - generic "Marketplace preview" [ref=e38] [box=711,455,632,291]:
+        - generic [ref=e39] [box=730,474,590,56]
+        - article [ref=e101] [box=731,539,289,89]
+        - article [ref=e107] [box=1033,534,289,89]
+        - article [ref=e112] [box=733,637,289,89]
+        - article [ref=e118] [box=1034,632,289,89]
+    - generic [ref=e63] [box=100,1029,1240,522]:
+      - generic [ref=e64] [box=100,1093,1240,56]:
+        - heading "Explore growing catalog" [level=2] [ref=e65] [box=100,1093,642,56]
+        - button "Open all" [ref=e66] [cursor=pointer] [box=1221,1109,119,40]
+      - generic [ref=e124] [box=100,1173,1240,314]:
+        - button "01 Programming & IT 4 subcategories" [ref=e125] [cursor=pointer] [box=100,1173,300,150]
+        - button "02 Design 4 subcategories" [ref=e129] [cursor=pointer] [box=414,1173,300,150]
+        - button "03 Writing 4 subcategories" [ref=e133] [cursor=pointer] [box=727,1173,300,150]
+        - button "04 Marketing 4 subcategories" [ref=e137] [cursor=pointer] [box=1041,1173,300,150]
+        - button "05 Video & Animation 3 subcategories" [ref=e141] [cursor=pointer] [box=100,1337,300,150]
+        - button "06 Business 3 subcategories" [ref=e145] [cursor=pointer] [box=414,1337,300,150]
+    - generic [ref=e69] [box=100,1581,1240,116]:
+      - generic [ref=e70] [box=101,1582,412,114]:
+        - strong [ref=e71] [box=127,1608,360,44]: 20+
+        - text: active services loaded
+      - generic [ref=e72] [box=514,1582,412,114]:
+        - strong [ref=e73] [box=540,1608,360,44]: JWT
+        - text: auto refresh before expiry
+      - generic [ref=e74] [box=927,1582,412,114]:
+        - strong [ref=e75] [box=953,1608,360,44]: DRF
+        - text: current views only
+    - generic [ref=e76] [box=100,1767,1240,206]:
+      - article [ref=e77] [box=100,1767,404,206]:
+        - img [ref=e78] [box=128,1796,24,24]
+        - heading "Find" [level=3] [ref=e81] [box=128,1837,348,26]
+        - paragraph [ref=e82] [box=128,1879,348,25]: Search services, category, price, delivery days.
+      - article [ref=e83] [box=518,1767,404,206]:
+        - img [ref=e84] [box=546,1796,24,24]
+        - heading "Order" [level=3] [ref=e88] [box=546,1837,348,26]
+        - paragraph [ref=e89] [box=546,1879,348,25]: Send requirements from kwork detail page.
+      - article [ref=e90] [box=936,1767,404,206]:
+        - img [ref=e91] [box=964,1796,24,24]
+        - heading "Deliver" [level=3] [ref=e96] [box=964,1837,348,26]
+        - paragraph [ref=e97] [box=964,1879,348,50]: Seller accepts, rejects, or delivers from studio flow.
+  - contentinfo [ref=e98] [box=100,2043,1240,83]:
+    - generic [ref=e99] [box=100,2078,96,14]: Kworkforge MVP
+    - generic [ref=e100] [box=1125,2078,215,14]: Auth · Catalog · Seller Studio · Orders

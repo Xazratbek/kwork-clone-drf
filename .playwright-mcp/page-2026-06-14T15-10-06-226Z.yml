@@ -1,0 +1,485 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e6]:
+        - link "Professional services" [ref=e8] [cursor=pointer]:
+          - /url: /
+          - img [ref=e9]
+          - generic [ref=e12]: Professional services
+        - textbox "Find Services" [ref=e14]
+        - list [ref=e18]:
+          - listitem [ref=e19]: Sign In
+          - listitem [ref=e20]:
+            - link "Sign Up" [ref=e21] [cursor=pointer]:
+              - /url: /signup
+          - listitem [ref=e22]:
+            - link "Are you a freelancer?" [ref=e23] [cursor=pointer]:
+              - /url: /for-sellers
+      - list [ref=e26]:
+        - listitem [ref=e27]:
+          - link "Design" [ref=e28] [cursor=pointer]:
+            - /url: https://kwork.com/categories/design
+            - generic [ref=e29]: Design
+        - listitem [ref=e30]:
+          - link "Development & IT" [ref=e31] [cursor=pointer]:
+            - /url: https://kwork.com/categories/programming
+            - generic [ref=e32]: Development & IT
+        - listitem [ref=e33]:
+          - link "Writing & Translations" [ref=e34] [cursor=pointer]:
+            - /url: https://kwork.com/categories/writing-translations
+            - generic [ref=e35]: Writing & Translations
+        - listitem [ref=e36]:
+          - link "SEO & Web Traffic" [ref=e37] [cursor=pointer]:
+            - /url: https://kwork.com/categories/seo
+            - generic [ref=e38]: SEO & Web Traffic
+        - listitem [ref=e39]:
+          - link "Digital Marketing & SMM" [ref=e40] [cursor=pointer]:
+            - /url: https://kwork.com/categories/marketing
+            - generic [ref=e41]: Digital Marketing & SMM
+        - listitem [ref=e42]:
+          - link "Audio & Video" [ref=e43] [cursor=pointer]:
+            - /url: https://kwork.com/categories/audio-video
+            - generic [ref=e44]: Audio & Video
+        - listitem [ref=e45]:
+          - link "Business & Lifestyle" [ref=e46] [cursor=pointer]:
+            - /url: https://kwork.com/categories/business
+            - generic [ref=e47]: Business & Lifestyle
+    - generic [ref=e50]:
+      - generic [ref=e51]: Download the Kwork mobile app and never miss important updates or notifications!
+      - link "Get the App" [ref=e52] [cursor=pointer]:
+        - /url: /mobileapp
+  - generic [ref=e56]:
+    - generic [ref=e57]:
+      - generic [ref=e61]:
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic: Tanya, Freelance Accountant
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic: Margarita, Graphic Designer
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic: Alex, Front-end Developer
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic: Eugenia, Freelance Poet
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic: Dennis, Web Designer
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic: Lilith, Web Developer
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic: Eugene, Voice Actor
+        - generic [ref=e76]: Tanya, Freelance Accountant
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic: Margarita, Graphic Designer
+      - generic [ref=e78]:
+        - heading "Buy affordable freelance services on the go" [level=1] [ref=e79]:
+          - text: Buy affordable freelance services
+          - text: on the go
+        - generic [ref=e81]:
+          - textbox "Try \"social media design\"" [ref=e82]
+          - button "Search" [ref=e84] [cursor=pointer]
+        - generic [ref=e85]:
+          - generic [ref=e86]: "Popular:"
+          - generic [ref=e87]:
+            - link "Web Design" [ref=e88] [cursor=pointer]:
+              - /url: /search?query=Web Design
+              - generic [ref=e89]: Web Design
+            - link "Logo Design" [ref=e90] [cursor=pointer]:
+              - /url: /search?query=Logo Design
+              - generic [ref=e91]: Logo Design
+            - link "Social Media Design" [ref=e92] [cursor=pointer]:
+              - /url: /search?query=Social Media Design
+              - generic [ref=e93]: Social Media Design
+            - link "WordPress" [ref=e94] [cursor=pointer]:
+              - /url: /search?query=WordPress
+              - generic [ref=e95]: WordPress
+    - generic [ref=e105]:
+      - heading "Explore Kwork's Evergrowing Catalog" [level=2] [ref=e106]
+      - generic [ref=e107]:
+        - link "SEO & Web Traffic SEO & Web Traffic" [ref=e109] [cursor=pointer]:
+          - /url: https://kwork.com/categories/seo
+          - img "SEO & Web Traffic" [ref=e111]
+          - generic [ref=e112]: SEO & Web Traffic
+        - link "Digital Marketing & SMM Digital Marketing & SMM" [ref=e114] [cursor=pointer]:
+          - /url: https://kwork.com/categories/marketing
+          - img "Digital Marketing & SMM" [ref=e116]
+          - generic [ref=e117]: Digital Marketing & SMM
+        - link "Development & IT Development & IT" [ref=e119] [cursor=pointer]:
+          - /url: https://kwork.com/categories/programming
+          - img "Development & IT" [ref=e121]
+          - generic [ref=e122]: Development & IT
+        - link "Design Design" [ref=e124] [cursor=pointer]:
+          - /url: https://kwork.com/categories/design
+          - img "Design" [ref=e126]
+          - generic [ref=e127]: Design
+        - link "Business & Lifestyle Business & Lifestyle" [ref=e129] [cursor=pointer]:
+          - /url: https://kwork.com/categories/business
+          - img "Business & Lifestyle" [ref=e131]
+          - generic [ref=e132]: Business & Lifestyle
+        - link "Writing & Translations Writing & Translations" [ref=e134] [cursor=pointer]:
+          - /url: https://kwork.com/categories/writing-translations
+          - img "Writing & Translations" [ref=e136]
+          - generic [ref=e137]: Writing & Translations
+        - link "Audio & Video Audio & Video" [ref=e139] [cursor=pointer]:
+          - /url: https://kwork.com/categories/audio-video
+          - img "Audio & Video" [ref=e141]
+          - generic [ref=e142]: Audio & Video
+    - generic [ref=e145]:
+      - generic [ref=e148]: Professional Services
+      - generic [ref=e150]:
+        - generic [ref=e151]: "0"
+        - generic [ref=e152]: active kworks
+      - generic [ref=e153]:
+        - generic [ref=e154]: "0"
+        - generic [ref=e155]:
+          - text: new kworks
+          - text: this week
+      - generic [ref=e156]:
+        - generic [ref=e157]: "0"
+        - generic [ref=e158]:
+          - text: new buyers
+          - text: this week
+    - generic [ref=e160]:
+      - generic [ref=e161]:
+        - heading "Discover how easy it is to get things done" [level=2] [ref=e162]
+        - generic [ref=e163]: Perfect for your personal and business goals!
+      - generic [ref=e164]:
+        - generic [ref=e168]:
+          - heading "Find a freelancer" [level=4] [ref=e169]
+          - generic [ref=e170]: Explore thousands of professional services for every budget.
+        - generic [ref=e175]:
+          - heading "Shop with confidence" [level=4] [ref=e176]
+          - generic [ref=e177]:
+            - text: Always know prices and deadlines upfront.
+            - text: Your payment isn't released until you approve the work.
+        - generic [ref=e182]:
+          - heading "Get quality results" [level=4] [ref=e183]
+          - generic [ref=e184]:
+            - text: Our 100% Money Back Guarantee ensures
+            - text: top-quality work delivered on time
+            - text: or your money back.
+    - generic [ref=e187]:
+      - heading "Get inspired with projects created by our freelancers" [level=2] [ref=e188]
+      - generic [ref=e191]:
+        - generic [ref=e193]:
+          - link "LeaLvova" [ref=e195] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/4011138
+          - generic [ref=e196]:
+            - link "LeaLvova" [ref=e197] [cursor=pointer]:
+              - /url: https://kwork.com/user/LeaLvova
+            - generic [ref=e198]:
+              - text: "Freelancer:"
+              - link "LeaLvova" [ref=e199] [cursor=pointer]:
+                - /url: https://kwork.com/user/LeaLvova
+        - generic [ref=e201]:
+          - link "JuliaBeton" [ref=e203] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/3952013
+          - generic [ref=e204]:
+            - link "JuliaBeton" [ref=e205] [cursor=pointer]:
+              - /url: https://kwork.com/user/JuliaBeton
+            - generic [ref=e206]:
+              - text: "Freelancer:"
+              - link "JuliaBeton" [ref=e207] [cursor=pointer]:
+                - /url: https://kwork.com/user/JuliaBeton
+        - generic [ref=e209]:
+          - link "alimamedgasanov" [ref=e211] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/3951174
+          - generic [ref=e212]:
+            - link "alimamedgasanov" [ref=e213] [cursor=pointer]:
+              - /url: https://kwork.com/user/alimamedgasanov
+            - generic [ref=e214]:
+              - text: "Freelancer:"
+              - link "alimamedgasanov" [ref=e215] [cursor=pointer]:
+                - /url: https://kwork.com/user/alimamedgasanov
+        - generic [ref=e217]:
+          - link "4design" [ref=e219] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/3963662
+          - generic [ref=e220]:
+            - link "4design" [ref=e221] [cursor=pointer]:
+              - /url: https://kwork.com/user/4design
+            - generic [ref=e222]:
+              - text: "Freelancer:"
+              - link "4design" [ref=e223] [cursor=pointer]:
+                - /url: https://kwork.com/user/4design
+        - generic [ref=e225]:
+          - link "Darbinyans_Studio" [ref=e227] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/4004004
+          - generic [ref=e228]:
+            - link "Darbinyans_Studio" [ref=e229] [cursor=pointer]:
+              - /url: https://kwork.com/user/Darbinyans_Studio
+            - generic [ref=e230]:
+              - text: "Freelancer:"
+              - link "Darbinyans_Studio" [ref=e231] [cursor=pointer]:
+                - /url: https://kwork.com/user/Darbinyans_Studio
+        - generic [ref=e233]:
+          - link "Odesign" [ref=e235] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/3955689
+          - generic [ref=e236]:
+            - link "Odesign" [ref=e237] [cursor=pointer]:
+              - /url: https://kwork.com/user/Odesign
+            - generic [ref=e238]:
+              - text: "Freelancer:"
+              - link "Odesign" [ref=e239] [cursor=pointer]:
+                - /url: https://kwork.com/user/Odesign
+        - generic [ref=e241]:
+          - link "ValentynM" [ref=e243] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/4003571
+          - generic [ref=e244]:
+            - link "ValentynM" [ref=e245] [cursor=pointer]:
+              - /url: https://kwork.com/user/ValentynM
+            - generic [ref=e246]:
+              - text: "Freelancer:"
+              - link "ValentynM" [ref=e247] [cursor=pointer]:
+                - /url: https://kwork.com/user/ValentynM
+        - generic [ref=e249]:
+          - link "Mariichka" [ref=e251] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/3963261
+          - generic [ref=e252]:
+            - link "Mariichka" [ref=e253] [cursor=pointer]:
+              - /url: https://kwork.com/user/Mariichka
+            - generic [ref=e254]:
+              - text: "Freelancer:"
+              - link "Mariichka" [ref=e255] [cursor=pointer]:
+                - /url: https://kwork.com/user/Mariichka
+        - generic [ref=e257]:
+          - link "Vazillo_design" [ref=e259] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/4077256
+          - generic [ref=e260]:
+            - link "Vazillo_design" [ref=e261] [cursor=pointer]:
+              - /url: https://kwork.com/user/Vazillo_design
+            - generic [ref=e262]:
+              - text: "Freelancer:"
+              - link "Vazillo_design" [ref=e263] [cursor=pointer]:
+                - /url: https://kwork.com/user/Vazillo_design
+        - generic [ref=e265]:
+          - link "malkovskaya" [ref=e267] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/4060894
+          - generic [ref=e268]:
+            - link "malkovskaya" [ref=e269] [cursor=pointer]:
+              - /url: https://kwork.com/user/malkovskaya
+            - generic [ref=e270]:
+              - text: "Freelancer:"
+              - link "malkovskaya" [ref=e271] [cursor=pointer]:
+                - /url: https://kwork.com/user/malkovskaya
+        - generic [ref=e273]:
+          - link "moon1" [ref=e275] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/4004186
+          - generic [ref=e276]:
+            - link "moon1" [ref=e277] [cursor=pointer]:
+              - /url: https://kwork.com/user/moon1
+            - generic [ref=e278]:
+              - text: "Freelancer:"
+              - link "moon1" [ref=e279] [cursor=pointer]:
+                - /url: https://kwork.com/user/moon1
+        - generic [ref=e281]:
+          - link "HatunMongol" [ref=e283] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/4065846
+          - generic [ref=e284]:
+            - link "HatunMongol" [ref=e285] [cursor=pointer]:
+              - /url: https://kwork.com/user/HatunMongol
+            - generic [ref=e286]:
+              - text: "Freelancer:"
+              - link "HatunMongol" [ref=e287] [cursor=pointer]:
+                - /url: https://kwork.com/user/HatunMongol
+        - generic [ref=e289]:
+          - link "LeaLvova" [ref=e291] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/4011138
+          - generic [ref=e292]:
+            - link "LeaLvova" [ref=e293] [cursor=pointer]:
+              - /url: https://kwork.com/user/LeaLvova
+            - generic [ref=e294]:
+              - text: "Freelancer:"
+              - link "LeaLvova" [ref=e295] [cursor=pointer]:
+                - /url: https://kwork.com/user/LeaLvova
+        - generic [ref=e297]:
+          - link "JuliaBeton" [ref=e299] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/3952013
+          - generic [ref=e300]:
+            - link "JuliaBeton" [ref=e301] [cursor=pointer]:
+              - /url: https://kwork.com/user/JuliaBeton
+            - generic [ref=e302]:
+              - text: "Freelancer:"
+              - link "JuliaBeton" [ref=e303] [cursor=pointer]:
+                - /url: https://kwork.com/user/JuliaBeton
+        - generic [ref=e305]:
+          - link "alimamedgasanov" [ref=e307] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/3951174
+          - generic [ref=e308]:
+            - link "alimamedgasanov" [ref=e309] [cursor=pointer]:
+              - /url: https://kwork.com/user/alimamedgasanov
+            - generic [ref=e310]:
+              - text: "Freelancer:"
+              - link "alimamedgasanov" [ref=e311] [cursor=pointer]:
+                - /url: https://kwork.com/user/alimamedgasanov
+        - generic [ref=e313]:
+          - link "4design" [ref=e315] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/3963662
+          - generic [ref=e316]:
+            - link "4design" [ref=e317] [cursor=pointer]:
+              - /url: https://kwork.com/user/4design
+            - generic [ref=e318]:
+              - text: "Freelancer:"
+              - link "4design" [ref=e319] [cursor=pointer]:
+                - /url: https://kwork.com/user/4design
+        - generic [ref=e321]:
+          - link "Darbinyans_Studio" [ref=e323] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/4004004
+          - generic [ref=e324]:
+            - link "Darbinyans_Studio" [ref=e325] [cursor=pointer]:
+              - /url: https://kwork.com/user/Darbinyans_Studio
+            - generic [ref=e326]:
+              - text: "Freelancer:"
+              - link "Darbinyans_Studio" [ref=e327] [cursor=pointer]:
+                - /url: https://kwork.com/user/Darbinyans_Studio
+        - generic [ref=e329]:
+          - link "Odesign" [ref=e331] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/3955689
+          - generic [ref=e332]:
+            - link "Odesign" [ref=e333] [cursor=pointer]:
+              - /url: https://kwork.com/user/Odesign
+            - generic [ref=e334]:
+              - text: "Freelancer:"
+              - link "Odesign" [ref=e335] [cursor=pointer]:
+                - /url: https://kwork.com/user/Odesign
+        - generic [ref=e337]:
+          - link "ValentynM" [ref=e339] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/4003571
+          - generic [ref=e340]:
+            - link "ValentynM" [ref=e341] [cursor=pointer]:
+              - /url: https://kwork.com/user/ValentynM
+            - generic [ref=e342]:
+              - text: "Freelancer:"
+              - link "ValentynM" [ref=e343] [cursor=pointer]:
+                - /url: https://kwork.com/user/ValentynM
+        - generic [ref=e345]:
+          - link "Mariichka" [ref=e347] [cursor=pointer]:
+            - /url: https://kwork.com/portfolio/3963261
+          - generic [ref=e348]:
+            - link "Mariichka" [ref=e349] [cursor=pointer]:
+              - /url: https://kwork.com/user/Mariichka
+            - generic [ref=e350]:
+              - text: "Freelancer:"
+              - link "Mariichka" [ref=e351] [cursor=pointer]:
+                - /url: https://kwork.com/user/Mariichka
+    - generic [ref=e357]:
+      - heading "Intelligent business solutions for entrepreneurs" [level=2] [ref=e358]
+      - generic [ref=e359]:
+        - generic [ref=e360]:
+          - generic [ref=e361]: Scaling Made Easy
+          - paragraph [ref=e362]: Find professional talent to boost your conversion, sales, and traffic.
+        - generic [ref=e363]:
+          - generic [ref=e364]: Outsource & Save (up to 87%!)
+          - paragraph [ref=e365]: Dramatically reduce your expenses with fixed-price freelance services for every budget.
+        - generic [ref=e366]:
+          - generic [ref=e367]: Focus on Priorities
+          - paragraph [ref=e368]: Spend up to 75% less time on business tasks and focus on what really matters for growth.
+    - generic [ref=e374]:
+      - heading "Start saving with freelance services today" [level=2] [ref=e375]
+      - generic [ref=e376]: "Speed, quality, and affordability: you can have it all!"
+      - button "Sign up for Free" [ref=e377] [cursor=pointer]
+    - generic [ref=e379]:
+      - generic [ref=e380]:
+        - generic [ref=e382]: Professional Services
+        - generic [ref=e383]: Getting things done has never been easier.
+      - generic [ref=e384]:
+        - generic [ref=e385]:
+          - paragraph [ref=e386]: Want to save time and money without compromising on quality? That's what we’re here for.
+          - paragraph [ref=e387]: We built Kwork to help independent and results-oriented entrepreneurs like you find talented freelancers for all your business needs.
+          - paragraph [ref=e388]: On Kwork, thousands of talented freelancers compete for your business by listing their services in the Catalog. These services are sold like convenient grab-and-go items in a real store. On our platform, there are no confusing and costly hourly rates.
+          - paragraph [ref=e389]: There's also no more haggling over price and deadlines. Prices, deadlines, and services included are specified in advance, saving you time, money, and energy.
+          - paragraph [ref=e390]: You can shop freelance services with confidence on Kwork. If anything ever goes wrong, you're protected by our 100% Money Back Guarantee, one-of-a-kind Buyer Protection Program, and incredible Support Team.
+          - paragraph [ref=e391]: Why wait? Get things done today!
+        - generic [ref=e392]:
+          - paragraph [ref=e393]: Have a unique job, or too busy to browse for freelancers? Post a buyer request in our tailor-made Exchange section!
+          - paragraph [ref=e394]: Just provide a description, delivery time, and budget. Kwork's seasoned freelancers will send in bespoke offers customized to your task. Best suited for complex or large projects.
+          - paragraph [ref=e395]: The quality of offers on Kwork is unique. Thanks to a proprietary feature on our platform, you don't need to sift through a sea of generic offers you might receive on other freelance platforms. Since Kwork professionals are rewarded for putting special thought and effort into every offer, you get to choose from the crème de la crème.
+          - paragraph [ref=e396]: Have a project you need to check off? Post your request today!
+  - generic [ref=e398]:
+    - generic [ref=e399]:
+      - text: We use files
+      - link "cookie" [ref=e400] [cursor=pointer]:
+        - /url: /privacy
+      - text: to analyze sessions and make the site more convenient.
+    - button "Okay!" [ref=e401] [cursor=pointer]
+  - generic [ref=e404]:
+    - generic [ref=e405]:
+      - link [ref=e407] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e410]:
+        - generic [ref=e411]:
+          - generic [ref=e413]: About
+          - generic [ref=e415]:
+            - link "About Kwork" [ref=e416] [cursor=pointer]:
+              - /url: /about
+            - link "Buyer Protection Program" [ref=e417] [cursor=pointer]:
+              - /url: /protection
+            - link "Terms of Service" [ref=e418] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Privacy Policy" [ref=e419] [cursor=pointer]:
+              - /url: /privacy
+        - generic [ref=e420]:
+          - generic [ref=e422]: Resources
+          - generic [ref=e424]:
+            - link "For Freelancers" [ref=e425] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "How to Earn on Kwork" [ref=e426] [cursor=pointer]:
+              - /url: /how_to_earn_on_kwork
+            - link "Categories" [ref=e427] [cursor=pointer]:
+              - /url: /categories
+            - link "Affiliate Program" [ref=e428] [cursor=pointer]:
+              - /url: /affiliate_program
+            - link "Kwork Reviews" [ref=e429] [cursor=pointer]:
+              - /url: /testimonials
+            - link "Kwork Mobile App" [ref=e430] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=e431]:
+          - generic [ref=e433]: Help Center
+          - generic [ref=e435]:
+            - link "Approval process for kworks" [ref=e436] [cursor=pointer]:
+              - /url: /kwork_approval_process
+            - link "FAQ" [ref=e437] [cursor=pointer]:
+              - /url: /faq
+            - link "Contact Support" [ref=e438] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=e439]:
+      - generic [ref=e440]:
+        - paragraph [ref=e441]: 2015 - 2026 Kwork ©
+        - paragraph [ref=e442]: KWORK Technologies OÜ
+        - paragraph [ref=e443]: Harju maakond, Tallinn, Kesklinna linnaosa
+        - paragraph [ref=e444]: Narva mnt 7,634, Estonia
+      - generic [ref=e445]:
+        - link "appstore" [ref=e446] [cursor=pointer]:
+          - /url: https://apps.apple.com/eng/app/kwork/id1456387980
+          - img "appstore" [ref=e447]
+        - link "googleplay" [ref=e448] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app&hl=en
+          - img "googleplay" [ref=e449]

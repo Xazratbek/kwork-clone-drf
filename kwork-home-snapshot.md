@@ -1,0 +1,138 @@
+- generic [active] [ref=e1] [box=0,0,1440,1000]:
+  - generic [ref=e3] [box=0,0,1440,159]:
+    - generic [ref=e4] [box=0,0,1440,105]:
+      - generic [ref=e6] [box=76,0,1288,64]:
+        - link "Professional services" [ref=e8] [cursor=pointer] [box=100,14,110,42]:
+          - /url: /
+        - textbox "Find Services" [ref=e14] [box=226,16,360,32]
+        - list [ref=e18] [box=1013,12,327,40]
+      - list [ref=e26] [box=76,65,1288,40]:
+        - listitem [ref=e27] [box=76,65,115,40]
+        - listitem [ref=e30] [box=191,65,184,40]
+        - listitem [ref=e33] [box=375,65,211,40]
+        - listitem [ref=e36] [box=586,65,189,40]
+        - listitem [ref=e39] [box=774,65,229,40]
+        - listitem [ref=e42] [box=1004,65,161,40]
+        - listitem [ref=e45] [box=1165,65,199,40]
+    - generic [ref=e50] [box=371,116,698,32]:
+      - generic [ref=e51] [box=371,121,562,22]: Download the Kwork mobile app and never miss important updates or notifications!
+      - link "Get the App" [ref=e52] [cursor=pointer] [box=957,116,112,32]:
+        - /url: /mobileapp
+  - generic [ref=e56] [box=0,159,1440,3692]:
+    - generic [ref=e57] [box=0,159,1440,480]:
+      - generic [ref=e61] [box=0,159,1440,480]:
+        - generic [box=0,159,1440,480]
+        - generic [box=0,159,1440,480]
+        - generic [box=0,159,1440,480]
+        - generic [box=0,159,1440,480]
+        - generic [box=0,159,1440,480]
+        - generic [box=0,159,1440,480]
+        - generic [box=0,159,1440,480]
+        - generic [ref=e76] [box=873,599,326,24]: Tanya, Freelance Accountant
+        - generic [box=0,159,1440,480]
+      - generic [ref=e78] [box=100,279,726,204]:
+        - heading "Buy affordable freelance services on the go" [level=1] [ref=e79] [box=100,279,726,80]
+        - generic [ref=e81] [box=100,383,726,48]
+        - generic [ref=e85] [box=100,447,610,36]
+    - generic [ref=e105] [box=76,762,1288,490]:
+      - heading "Explore Kwork's Evergrowing Catalog" [level=2] [ref=e106] [box=100,762,1240,32]
+      - generic [ref=e107] [box=88,814,1264,438]:
+        - link "SEO & Web Traffic SEO & Web Traffic" [ref=e109] [cursor=pointer] [box=100,826,292,195]:
+          - /url: https://kwork.com/categories/seo
+        - link "Digital Marketing & SMM Digital Marketing & SMM" [ref=e114] [cursor=pointer] [box=416,826,292,195]:
+          - /url: https://kwork.com/categories/marketing
+        - link "Development & IT Development & IT" [ref=e119] [cursor=pointer] [box=732,826,292,195]:
+          - /url: https://kwork.com/categories/programming
+        - link "Design Design" [ref=e124] [cursor=pointer] [box=1048,826,292,195]:
+          - /url: https://kwork.com/categories/design
+        - link "Business & Lifestyle Business & Lifestyle" [ref=e129] [cursor=pointer] [box=258,1045,292,195]:
+          - /url: https://kwork.com/categories/business
+        - link "Writing & Translations Writing & Translations" [ref=e134] [cursor=pointer] [box=574,1045,292,195]:
+          - /url: https://kwork.com/categories/writing-translations
+        - link "Audio & Video Audio & Video" [ref=e139] [cursor=pointer] [box=890,1045,292,195]:
+          - /url: https://kwork.com/categories/audio-video
+    - generic [ref=e145] [box=100,1304,1240,168]:
+      - generic [ref=e148] [box=116,1403,276,20]: Professional Services
+      - generic [ref=e150] [box=410,1327,310,122]:
+        - generic [ref=e151] [box=426,1327,276,60]: "0"
+        - generic [ref=e152] [box=426,1403,276,20]: active kworks
+      - generic [ref=e153] [box=720,1327,310,122]:
+        - generic [ref=e154] [box=736,1327,276,60]: "0"
+        - generic [ref=e155] [box=736,1403,276,40]
+      - generic [ref=e156] [box=1030,1327,310,122]:
+        - generic [ref=e157] [box=1046,1327,278,60]: "0"
+        - generic [ref=e158] [box=1046,1403,278,40]
+    - generic [ref=e160] [box=76,1566,1288,590]:
+      - generic [ref=e161] [box=100,1566,1240,60]:
+        - heading "Discover how easy it is to get things done" [level=2] [ref=e162] [box=128,1566,1212,32]
+        - generic [ref=e163] [box=128,1606,1212,20]: Perfect for your personal and business goals!
+      - generic [ref=e164] [box=100,1626,1240,530]:
+        - generic [ref=e168] [box=154,1861,305,78]
+        - generic [ref=e175] [box=562,1861,317,100]
+        - generic [ref=e182] [box=998,1861,292,100]
+    - generic [ref=e187] [box=76,2218,1288,326]:
+      - heading "Get inspired with projects created by our freelancers" [level=2] [ref=e188] [box=100,2218,1240,32]
+      - generic [ref=e191] [box=-1175,2282,1262,262]:
+        - generic [ref=e193] [box=-1164,2282,294,262]
+        - generic [ref=e201] [box=-848,2282,294,262]
+        - generic [ref=e209] [box=-532,2282,294,262]
+        - generic [ref=e217] [box=-216,2282,294,262]
+        - generic [ref=e225] [box=100,2282,294,262]
+        - generic [ref=e233] [box=416,2282,294,262]
+        - generic [ref=e241] [box=732,2282,294,262]
+        - generic [ref=e249] [box=1048,2282,294,262]
+        - generic [ref=e257] [box=1364,2282,294,262]
+        - generic [ref=e265] [box=1680,2282,294,262]
+        - generic [ref=e273] [box=1996,2282,294,262]
+        - generic [ref=e281] [box=2312,2282,294,262]
+        - generic [ref=e289] [box=2628,2282,294,262]
+        - generic [ref=e297] [box=2944,2282,294,262]
+        - generic [ref=e305] [box=3260,2282,294,262]
+        - generic [ref=e313] [box=3576,2282,294,262]
+        - generic [ref=e321] [box=3892,2282,294,262]
+        - generic [ref=e329] [box=4208,2282,294,262]
+        - generic [ref=e337] [box=4524,2282,294,262]
+        - generic [ref=e345] [box=4840,2282,294,262]
+    - generic [ref=e357] [box=100,2612,644,333]:
+      - heading "Intelligent business solutions for entrepreneurs" [level=2] [ref=e358] [box=100,2610,632,32]
+      - generic [ref=e359] [box=100,2674,632,271]:
+        - generic [ref=e360] [box=100,2674,632,53]
+        - generic [ref=e363] [box=100,2759,632,77]
+        - generic [ref=e366] [box=100,2868,632,77]
+    - generic [ref=e374] [box=100,3013,1240,406]:
+      - heading "Start saving with freelance services today" [level=2] [ref=e375] [box=100,3075,1240,32]
+      - generic [ref=e376] [box=100,3123,1240,24]: "Speed, quality, and affordability: you can have it all!"
+      - button "Sign up for Free" [ref=e377] [cursor=pointer] [box=554,3211,333,48]
+    - generic [ref=e379] [box=76,3389,1288,430]:
+      - generic [ref=e380] [box=100,3389,1240,64]:
+        - generic [ref=e382] [box=218,3389,283,32]: Professional Services
+        - generic [ref=e383] [box=100,3429,1240,24]: Getting things done has never been easier.
+      - generic [ref=e384] [box=100,3485,1240,334]:
+        - generic [ref=e385] [box=100,3485,620,334]
+        - generic [ref=e392] [box=720,3485,620,334]
+  - generic [ref=e398] [box=320,916,800,64]:
+    - generic [ref=e399] [box=344,937,501,22]:
+      - text: We use files
+      - link "cookie" [ref=e400] [cursor=pointer] [box=428,940,44,17]:
+        - /url: /privacy
+      - text: to analyze sessions and make the site more convenient.
+    - button "Okay!" [ref=e401] [cursor=pointer] [box=869,928,124,40]
+  - generic [ref=e404] [box=76,3899,1288,385]:
+    - generic [ref=e405] [box=100,3899,1240,240]:
+      - link [ref=e407] [cursor=pointer] [box=100,3900,112,38]:
+        - /url: /
+      - generic [ref=e410] [box=356,3899,984,240]:
+        - generic [ref=e411] [box=356,3899,170,240]
+        - generic [ref=e420] [box=765,3899,147,240]
+        - generic [ref=e431] [box=1150,3899,190,240]
+    - generic [ref=e439] [box=100,4171,1240,113]:
+      - generic [ref=e440] [box=100,4188,240,80]:
+        - paragraph [ref=e441] [box=100,4188,240,14]: 2015 - 2026 Kwork ©
+        - paragraph [ref=e442] [box=100,4210,240,14]: KWORK Technologies OÜ
+        - paragraph [ref=e443] [box=100,4232,240,14]: Harju maakond, Tallinn, Kesklinna linnaosa
+        - paragraph [ref=e444] [box=100,4254,240,14]: Narva mnt 7,634, Estonia
+      - generic [ref=e445] [box=1052,4204,288,48]:
+        - link "appstore" [ref=e446] [cursor=pointer] [box=1052,4204,140,48]:
+          - /url: https://apps.apple.com/eng/app/kwork/id1456387980
+        - link "googleplay" [ref=e448] [cursor=pointer] [box=1200,4204,140,48]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app&hl=en

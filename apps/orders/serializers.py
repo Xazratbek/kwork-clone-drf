@@ -15,7 +15,7 @@ class OrderSerializer(ModelSerializer):
     kwork = KworkListSerializer()
     class Meta:
         model = Order
-        fields = ['buyer_username', 'seller_username', 'kwork', 'title_snapshot', 'price_minor',\
+        fields = ['id','buyer_username', 'seller_username', 'kwork', 'title_snapshot', 'price_minor',\
                    'currency', 'requirements', 'status' ]
 
 class OrderUpdateSerializer(ModelSerializer):
