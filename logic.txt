@@ -1,0 +1,557 @@
+================================================================================
+KWORK CLONE — MODEL BOG'LIQLIKLARI VA USER FLOW LOGIKASI
+Versiya: 1.0
+Maqsad: qaysi flowda qaysi modellar ishlashi va ular o'rtasidagi mantiqiy ketma-ketlik
+================================================================================
+
+
+================================================================================
+1. UMUMIY ARXITEKTURA (3 QAVAT)
+================================================================================
+
+QAVAT 1 — FOYDALANUVCHI VA KATALOG
+    User, SellerProfile, EmailVerification
+    Category, Kwork, KworkImage, KworkFAQ, Favorite
+
+QAVAT 2 — BITIM (TRANSACTION) MARKAZI
+    Order (+ OrderMessage, Delivery, OrderEvent, RevisionRequest,
+           OrderRequirement, MessageAttachment)
+
+QAVAT 3 — PUL VA ISHONCH
+    Payment, Escrow                          ← tashqi to'lov + buyurtma darajasidagi hold
+    Wallet, WalletTransaction                ← ichki balans va ledger (asosan seller)
+    WithdrawalRequest, RefundRequest       ← pul chiqarish / qaytarish so'rovlari
+    Dispute, DisputeMessage                  ← nizo va arbitraj
+
+QAVAT 4 — O'SIMCHA FLOWLAR
+    CustomOffer                              ← seller → buyer maxsus taklif
+    Project, ProjectBid                      ← buyer e'lon + seller bid
+
+QAVAT 5 — KOMMUNIKATSIYA VA REPUTATSIYA
+    Notification, NotificationPreference, DeviceToken
+    Review
+
+
+================================================================================
+2. ASOSIY QOIDA: PAYMENT vs WALLET vs ESCROW
+================================================================================
+
+Bu uchta model turli vazifani bajaradi. Aralashtirmaslik kerak.
+
+┌─────────────┬────────────────────────────────────────────────────────────────┐
+│ MODEL       │ VAZIFASI                                                       │
+├─────────────┼────────────────────────────────────────────────────────────────┤
+│ Payment     │ Buyer tashqi tizim orqali to'laydi (Click/Payme/Mock/Stripe).  │
+│             │ Bu — provayder bilan tranzaksiya yozuvi.                        │
+│             │ Order bilan 1:1. Status: pending → completed/failed.           │
+├─────────────┼────────────────────────────────────────────────────────────────┤
+│ Escrow      │ To'lov muvaffaqiyatli bo'lgach pul "us_holda" qoladi.          │
+│             │ Order bilan 1:1. Status: held → released/refunded.             │
+│             │ Seller hali pul olmagan — platforma vositachisi sifatida       │
+│             │ mablag'ni ushlab turadi.                                       │
+├─────────────┼────────────────────────────────────────────────────────────────┤
+│ Wallet      │ User ichki hamyoni (asosan SELLER uchun daromad).              │
+│             │ balance = yechib olish mumkin bo'lgan pul.                     │
+│             │ escrow_balance = ichki hisobda ushlab turilgan (ixtiyoriy).    │
+├─────────────┼────────────────────────────────────────────────────────────────┤
+│ WalletTrans │ Har bir balans o'zgarishining audit izi (ledger).              │
+│ action      │ Order bilan bog'lanishi mumkin (nullable FK).                  │
+└─────────────┴────────────────────────────────────────────────────────────────┘
+
+TYPICAL PUL OQIMI (standart order):
+
+    Buyer ──[Payment: Click/Payme]──► Platforma
+                │
+                ▼
+           Escrow (held)  ← order tugaguncha pul shu yerda
+                │
+    Order COMPLETED bo'lganda
+                │
+                ▼
+           Escrow (released)
+                │
+                ▼
+    Seller Wallet.balance += summa
+    WalletTransaction (type=payment_received)
+
+XULOSA:
+    • Order yaratishda — faqat Order (+ OrderEvent)
+    • To'lovda — Payment (+ keyin Escrow)
+    • Seller pul olishda — Wallet + WalletTransaction (Payment emas!)
+    • Buyer odatda Wallet dan to'lamaydi — tashqi Payment orqali to'laydi
+      (kelajakda wallet balance dan to'lash qo'shilsa — WalletTransaction
+       type=payment_sent ishlatiladi)
+
+
+================================================================================
+3. MODEL BOG'LIQLIKLAR XARITASI
+================================================================================
+
+User (markaziy actor)
+├── 1:1  SellerProfile          (faqat seller bo'lganda)
+├── 1:1  Wallet
+├── 1:1  NotificationPreference
+├── 1:N  EmailVerification
+├── 1:N  DeviceToken
+├── 1:N  Notification
+├── 1:N  Kwork                  (seller sifatida)
+├── 1:N  Favorite
+├── 1:N  buyer_orders  ──► Order
+├── 1:N  seller_orders ──► Order
+├── 1:N  custom_offers_sent    ──► CustomOffer
+├── 1:N  custom_offers_received
+├── 1:N  projects              ──► Project (buyer)
+├── 1:N  project_bids          ──► ProjectBid (seller)
+├── 1:N  withdrawal_requests
+├── 1:N  disputes_opened
+├── 1:N  reviews_given / reviews_received
+
+Category
+├── self FK (parent → children)  — ierarxik kategoriya
+└── 1:N  Kwork
+
+Kwork
+├── N:1  User (seller)
+├── N:1  Category
+├── 1:N  KworkImage
+├── 1:N  KworkFAQ
+├── 1:N  Favorite
+└── 1:N  Order
+
+Order (bitim markazi — ko'p narsa shu yerga bog'lanadi)
+├── N:1  User (buyer)
+├── N:1  User (seller)
+├── N:1  Kwork
+├── 1:1  Payment
+├── 1:1  Escrow
+├── 1:1  Review
+├── 1:1  RefundRequest
+├── 1:1  Dispute
+├── 1:N  OrderMessage ──► MessageAttachment
+├── 1:N  Delivery ──► RevisionRequest
+├── 1:N  OrderEvent
+├── 1:N  OrderRequirement
+└── 1:N  WalletTransaction
+
+CustomOffer
+├── N:1  User (seller)
+├── N:1  User (buyer)
+└── [qabul qilinganda] ──► Order yaratiladi
+
+Project
+├── N:1  User (buyer)
+└── 1:N  ProjectBid
+         └── N:1  User (seller)
+         └── [bid qabul qilinganda] ──► Order yaratiladi
+
+
+================================================================================
+4. ORDER STATUS MASHINASI
+================================================================================
+
+    [NEW]
+      │
+      ├── seller REJECT ──────────────────────────► [REJECTED]
+      │
+      ├── buyer CANCEL (to'lovdan oldin) ─────────► [CANCELED]
+      │
+      └── Payment completed + seller ACCEPT ────────► [IN_PROGRESS]
+                │
+                ├── seller DELIVER ───────────────► [DELIVERED]
+                │         │
+                │         ├── buyer COMPLETE ─────► [COMPLETED]
+                │         │       └── Review ochiladi
+                │         │
+                │         └── buyer REVISION ─────► RevisionRequest (open)
+                │                   └── seller qayta ishlaydi
+                │                         └── [IN_PROGRESS] ga qaytish
+                │
+                ├── buyer CANCEL (business qoida) ─► [CANCELED]
+                │
+                └── DISPUTE ochiladi ─────────────► Dispute (order status
+                                                      o'zgarishi ixtiyoriy;
+                                                      OrderEvent.disputed yoziladi)
+
+Har status o'zgarishida:
+    • OrderEvent yaratiladi (timeline uchun)
+    • Notification yuboriladi (buyer va/yoki seller ga)
+
+
+================================================================================
+5. USER FLOWLAR (BATAFSIL)
+================================================================================
+
+
+--------------------------------------------------------------------------------
+FLOW 1: RO'YXATDAN O'TISH VA AUTENTIFIKATSIYA
+--------------------------------------------------------------------------------
+Actor: Guest → User
+
+Ketma-ketlik:
+    1. User yaratiladi (username, email, parol)
+    2. Wallet avtomatik yaratiladi (balance=0)
+    3. NotificationPreference avtomatik yaratiladi
+    4. EmailVerification token yuboriladi (agar email tasdiqlash yoqilgan bo'lsa)
+    5. User email link orqali tasdiqlaydi → email_verified_at to'ldiriladi
+
+Ishlatiladigan modellar:
+    User, EmailVerification, Wallet, NotificationPreference, Notification
+
+Ishlatilmaydigan modellar:
+    Order, Payment, Kwork, Review, ...
+
+
+--------------------------------------------------------------------------------
+FLOW 2: SELLER BO'LISH
+--------------------------------------------------------------------------------
+Actor: User (buyer) → User (seller)
+
+Ketma-ketlik:
+    1. User.is_seller = True
+    2. SellerProfile yaratiladi (display_name, bio, rating=0)
+    3. Notification (system) — "Siz endi seller sifatida ro'yxatdan o'tdingiz"
+
+Ishlatiladigan modellar:
+    User, SellerProfile, Notification
+
+
+--------------------------------------------------------------------------------
+FLOW 3: KWORK YARATISH VA BOSHQARISH
+--------------------------------------------------------------------------------
+Actor: Seller
+
+Ketma-ketlik:
+    1. Kwork yaratiladi (status=DRAFT)
+    2. KworkImage, KworkFAQ qo'shiladi (ixtiyoriy)
+    3. Seller ACTIVE qiladi → katalogda ko'rinadi
+    4. PAUSED — vaqtincha yashirish
+
+Ishlatiladigan modellar:
+    User, SellerProfile, Category, Kwork, KworkImage, KworkFAQ
+
+Bog'liq emas:
+    Payment, Wallet, Order (hali yo'q)
+
+
+--------------------------------------------------------------------------------
+FLOW 4: KATALOGDA QIDIRISH VA FAVORITE
+--------------------------------------------------------------------------------
+Actor: Guest / Buyer
+
+Ketma-ketlik:
+    1. Category bo'yicha Kwork ro'yxati (faqat ACTIVE)
+    2. Kwork detail: images, faqs, seller profile (SellerProfile)
+    3. Favorite qo'shish/o'chirish (login kerak)
+
+Ishlatiladigan modellar:
+    Category, Kwork, KworkImage, KworkFAQ, Favorite, User, SellerProfile
+
+Bog'liq emas:
+    Order, Payment
+
+
+--------------------------------------------------------------------------------
+FLOW 5: STANDART BUYURTMA (KWORK → ORDER) — ASOSIY FLOW
+--------------------------------------------------------------------------------
+Actor: Buyer + Seller
+
+── 5A. BUYURTMA YARATISH ──
+    1. Buyer ACTIVE Kwork tanlaydi
+    2. Order yaratiladi:
+         buyer, seller, kwork, title_snapshot, price_minor, requirements
+         status = NEW
+    3. OrderEvent (created, actor=buyer)
+    4. OrderRequirement — buyer savollarga javob beradi (ixtiyoriy)
+    5. OrderMessage — "Zakaz tushdi" xabari
+    6. Notification → seller (order_update)
+
+    Modellar: Order, OrderEvent, OrderRequirement, OrderMessage, Notification
+    Hali yo'q: Payment, Escrow, Wallet
+
+── 5B. TO'LOV (BUYER) ──
+    ⚠️ Bu bosqichda Payment ishlatiladi, Wallet EMAS (tashqi provayder)
+
+    1. Payment yaratiladi (order, amount, provider, status=pending)
+    2. Buyer Click/Payme/Mock orqali to'laydi
+    3. Payment.status = completed (yoki failed)
+    4. Agar completed:
+         a. Escrow yaratiladi (order, amount, status=held)
+         b. OrderEvent (paid, actor=buyer)
+         c. Notification → buyer (payment_confirmation)
+         d. Notification → seller (order_update — "to'lov qilindi")
+    5. Agar failed:
+         Payment.status = failed
+         Order NEW holatda qoladi yoki bekor qilinadi
+
+    Modellar: Payment, Escrow, Order, OrderEvent, Notification
+    Wallet: hali tegilmaydi (pul hali seller ga o'tmagan)
+
+── 5C. SELLER QABUL / RAD ETISH ──
+    1. Seller order ko'radi
+    2. QABUL: Order.status = IN_PROGRESS
+         OrderEvent (accepted, actor=seller)
+         Notification → buyer
+    3. RAD: Order.status = REJECTED
+         Escrow → refunded (agar to'lov bo'lgan bo'lsa)
+         Payment refund jarayoni (provayder orqali)
+         RefundRequest yaratilishi mumkin
+         Notification → buyer
+
+    Modellar: Order, OrderEvent, Escrow, RefundRequest (rad+to'lov bo'lsa),
+              Notification
+
+── 5D. ISH JARAYONI (CHAT) ──
+    1. OrderMessage — buyer ↔ seller xabar almashadi
+    2. MessageAttachment — fayl yuborish (ixtiyoriy)
+    3. Notification → qabul qiluvchi (message)
+
+    Modellar: OrderMessage, MessageAttachment, Notification
+
+── 5E. TOPSHIRISH (DELIVERY) ──
+    1. Seller Delivery yaratadi (message, file)
+    2. Order.status = DELIVERED
+    3. OrderEvent (delivered, actor=seller)
+    4. OrderMessage — "Ish topshirildi"
+    5. Notification → buyer
+
+    Modellar: Delivery, Order, OrderEvent, OrderMessage, Notification
+
+── 5F. QABUL YOKI REVISION ──
+    Variant A — Buyer qabul qiladi:
+        1. Order.status = COMPLETED
+        2. OrderEvent (completed, actor=buyer)
+        3. Escrow.status = released, released_at = now
+        4. Seller Wallet.balance += order.price_minor
+        5. WalletTransaction (type=payment_received, wallet=seller, order=order)
+        6. SellerProfile.completed_orders += 1
+        7. Notification → seller (pul tushdi), buyer (review so'rovi)
+
+        Modellar: Order, OrderEvent, Escrow, Wallet, WalletTransaction,
+                  SellerProfile, Notification
+
+    Variant B — Buyer revision so'raydi:
+        1. RevisionRequest yaratiladi (open, delivery FK, reason)
+        2. OrderEvent (revision_requested, actor=buyer)
+        3. Order.status = IN_PROGRESS (qayta ish)
+        4. Notification → seller
+
+        Modellar: RevisionRequest, Order, OrderEvent, Notification
+        Escrow: held holatda qoladi (pul chiqib ketmaydi)
+
+── 5G. REVIEW ──
+    Shart: Order.status = COMPLETED, Review hali yo'q
+
+    1. Review yaratiladi (order, buyer, seller, rating, comment)
+    2. SellerProfile.rating yangilanadi (o'rtacha)
+    3. Notification → seller (review)
+
+    Modellar: Review, Order, SellerProfile, Notification
+
+
+--------------------------------------------------------------------------------
+FLOW 6: CUSTOM OFFER (SELLER → BUYER MAXSUS TAKLIF)
+--------------------------------------------------------------------------------
+Actor: Seller → Buyer
+
+Ketma-ketlik:
+    1. Seller CustomOffer yaratadi (buyer, title, price, delivery_days, pending)
+    2. Notification → buyer
+    3. Buyer QABUL qiladi:
+         a. CustomOffer.status = accepted
+         b. Order yaratiladi (kwork FK bo'lmasligi mumkin — custom narx)
+         c. Keyin FLOW 5B dan davom (Payment → Escrow → ...)
+    4. Buyer RAD / muddati o'tsa expired
+
+Ishlatiladigan modellar:
+    CustomOffer, Order, Notification
+    Keyin: Payment, Escrow, Wallet, ... (standart order flow)
+
+
+--------------------------------------------------------------------------------
+FLOW 7: EXCHANGE (BUYER E'LON + SELLER BID)
+--------------------------------------------------------------------------------
+Actor: Buyer + Seller(lar)
+
+Ketma-ketlik:
+    1. Buyer Project yaratadi (title, budget, description, open)
+    2. Seller(lar) ProjectBid yuboradi (amount, message, delivery_days)
+    3. Notification → buyer (har yangi bid)
+    4. Buyer bitta bid ni QABUL qiladi:
+         a. ProjectBid.status = accepted
+         b. Boshqa bidlar rejected
+         c. Project.status = in_progress
+         d. Order yaratiladi (seller=bid.seller, narx=bid.amount)
+         e. FLOW 5B dan davom (to'lov, escrow, ...)
+
+Ishlatiladigan modellar:
+    Project, ProjectBid, Order, Notification
+    Keyin: Payment, Escrow, Wallet, ...
+
+
+--------------------------------------------------------------------------------
+FLOW 8: DISPUTE (NIZO)
+--------------------------------------------------------------------------------
+Actor: Buyer yoki Seller (+ Admin arbitraj)
+
+Ketma-ketlik:
+    1. Dispute ochiladi (order, opened_by, reason, open)
+    2. OrderEvent (disputed)
+    3. DisputeMessage — tomonlar va admin yozishadi
+    4. Notification → ikki tomon (dispute_update)
+
+    Admin hal qiladi:
+    Variant A — Buyer g'olib (refund):
+        Dispute.status = resolved
+        Escrow.status = refunded
+        RefundRequest.status = completed
+        WalletTransaction (refund) — agar seller ga allaqachon tushgan bo'lsa
+        Order.status = canceled
+
+    Variant B — Seller g'olib (release):
+        Escrow.status = released
+        Seller Wallet.balance += summa
+        WalletTransaction (payment_received)
+        Order.status = completed
+
+Ishlatiladigan modellar:
+    Dispute, DisputeMessage, Order, OrderEvent, Escrow, RefundRequest,
+    Wallet, WalletTransaction, Notification
+
+
+--------------------------------------------------------------------------------
+FLOW 9: REFUND SO'ROVI
+--------------------------------------------------------------------------------
+Actor: Buyer (+ Admin tasdiqlash)
+
+Ketma-ketlik:
+    1. RefundRequest yaratiladi (order, reason, pending)
+    2. Admin ko'rib chiqadi: approved / rejected
+    3. Agar approved + completed:
+         Escrow.status = refunded (yoki Payment refund provayder orqali)
+         Notification → buyer, seller
+
+Ishlatiladigan modellar:
+    RefundRequest, Order, Escrow, Payment, Notification
+
+Eslatma: Dispute ichida ham refund bo'lishi mumkin — ikkalasi Order ga 1:1,
+         bir orderda faqat bittasi faol bo'lishi kerak (business qoida).
+
+
+--------------------------------------------------------------------------------
+FLOW 10: PUL YECHISH (WITHDRAWAL)
+--------------------------------------------------------------------------------
+Actor: Seller
+
+Shart: Seller Wallet.balance yetarli
+
+Ketma-ketlik:
+    1. WithdrawalRequest yaratiladi (user, amount, method, pending)
+    2. Admin tasdiqlaydi: approved → processing → completed
+    3. completed bo'lganda:
+         Wallet.balance -= amount
+         WalletTransaction (type=withdrawal)
+    4. Notification → seller (withdrawal_status)
+
+Ishlatiladigan modellar:
+    WithdrawalRequest, Wallet, WalletTransaction, Notification
+
+Bog'liq emas:
+    Payment (bu — tashqi tizimga pul CHIQARISH, order to'lovi emas)
+    Escrow (order darajasida, withdrawal — seller shaxsiy balansidan)
+
+
+--------------------------------------------------------------------------------
+FLOW 11: BILDIRISHNOMALAR (CROSS-CUTTING)
+--------------------------------------------------------------------------------
+Har bir muhim hodisada NotificationService ishlaydi:
+
+    Hodisa                          Type                    Kimga
+    ─────────────────────────────────────────────────────────────────
+    Order yaratildi                 order_update            seller
+    To'lov muvaffaqiyatli           payment_confirmation    buyer
+    To'lov muvaffaqiyatli           order_update            seller
+    Order qabul qilindi             order_update            buyer
+    Yangi xabar                     message                 receiver
+    Delivery topshirildi            order_update            buyer
+    Order completed                 order_update            seller
+    Review so'rovi                    review_request          buyer
+    Review yozildi                  order_update            seller
+    Dispute yangilandi              dispute_update          ikkala tomon
+    Withdrawal holati               withdrawal_status       seller
+    Custom offer                    order_update            buyer
+    Yangi bid                       order_update            buyer
+
+NotificationPreference tekshiriladi:
+    • in_app_enabled → Notification DB ga yoziladi
+    • email_enabled → email yuboriladi
+    • push_enabled → DeviceToken orqali FCM (kelajak)
+
+Modellar: Notification, NotificationPreference, DeviceToken
+
+
+================================================================================
+6. FLOW × MODEL MATRITSASI (QISQA)
+================================================================================
+
+                        Ord Pay Esc Wal WTx Rev Not Dis Ref Wdr Off Prj
+Ro'yxatdan o'tish        -   -   -   +   -   -   +   -   -   -   -   -
+Seller bo'lish           -   -   -   -   -   -   +   -   -   -   -   -
+Kwork yaratish           -   -   -   -   -   -   -   -   -   -   -   -
+Favorite                 -   -   -   -   -   -   -   -   -   -   -   -
+Order yaratish           +   -   -   -   -   -   +   -   -   -   -   -
+To'lov                   +   +   +   -   -   -   +   -   -   -   -   -
+Seller qabul/rad         +   -   +/- -   -   -   +   -   +/- -   -   -
+Chat                     +   -   -   -   -   -   +   -   -   -   -   -
+Delivery                 +   -   -   -   -   -   +   -   -   -   -   -
+Complete                 +   -   +   +   +   -   +   -   -   -   -   -
+Revision                 +   -   -   -   -   -   +   -   -   -   -   -
+Review                   +   -   -   -   -   +   +   -   -   -   -   -
+Custom offer             +*  +   +   +   +   +   +   -   -   -   +   -
+Exchange/Bid             +*  +   +   +   +   +   +   -   -   -   -   +
+Dispute                  +   -   +   +/- +   -   +   +   +/- -   -   -
+Refund                   +   +/- +   -   -   -   +   -   +   -   -   -
+Withdrawal               -   -   -   +   +   -   +   -   -   +   -   -
+
++ = ishlatiladi   - = ishlatilmaydi   +/- = shartli   +* = offer/bid orqali yaratilgan order
+
+
+================================================================================
+7. MUHIM BUSINESS QOIDALAR
+================================================================================
+
+1. Bir Order → bitta Payment, bitta Escrow, bitta Review, bitta Dispute,
+   bitta RefundRequest (OneToOne).
+
+2. Seller pul olmaydi to'lovdan darhol — faqat Order COMPLETED + Escrow released.
+
+3. Payment — faqat tashqi provayder; Wallet.balance ga buyer to'lovi
+   bevosita tushmaydi (platforma escrow modeli).
+
+4. WalletTransaction — har doim yoziladi balans o'zgarganda (audit).
+
+5. OrderEvent — har muhim harakatda (frontend timeline uchun).
+
+6. Notification — har ikkala tomonga tegishli hodisalarda.
+
+7. SellerProfile.rating — faqat Review dan keyin yangilanadi.
+
+8. CustomOffer / ProjectBid qabul qilinganda yangi Order ochiladi va
+   standart order+payment flow ishlaydi.
+
+9. Dispute ochiq paytda Escrow released bo'lmasligi kerak.
+
+10. Withdrawal faqat seller Wallet.balance dan; buyer wallet kam ishlatiladi.
+
+
+================================================================================
+8. KELAJAKDA QO'SHILISHI MUMKIN (HOZIR MODELDA YO'Q)
+================================================================================
+
+    • OrderStatus.PAYMENT_PENDING — to'lov kutilayotgan holat
+    • Analytics / SellerMetric — seller dashboard statistikasi
+    • Buyer wallet dan to'lash — WalletTransaction type=payment_sent
+    • Stripe sandbox provider — Payment.provider ga qo'shimcha
+
+================================================================================
+OXIRI
+================================================================================
