@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.db import models
+from apps.core.models import TimeStampedUUIDModel
 
-
-class Notification(models.Model):
+class Notification(TimeStampedUUIDModel):
     TYPE_CHOICES = (
         ("order_update", "Order Update"),
         ("payment_confirmation", "Payment Confirmation"),
@@ -24,7 +24,6 @@ class Notification(models.Model):
     is_read = models.BooleanField(default=False)
     related_order_id = models.IntegerField(null=True, blank=True)
     data = models.JSONField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
     read_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
@@ -40,7 +39,7 @@ class Notification(models.Model):
         return f"{self.title} — {self.user}"
 
 
-class NotificationPreference(models.Model):
+class NotificationPreference(TimeStampedUUIDModel):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -57,8 +56,6 @@ class NotificationPreference(models.Model):
     push_order_updates = models.BooleanField(default=True)
     push_payment_notifications = models.BooleanField(default=True)
     push_messages = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Notification Preference"
@@ -68,7 +65,7 @@ class NotificationPreference(models.Model):
         return f"Preferences for {self.user}"
 
 
-class DeviceToken(models.Model):
+class DeviceToken(TimeStampedUUIDModel):
     PLATFORM_CHOICES = (
         ("ios", "iOS"),
         ("android", "Android"),
@@ -83,8 +80,6 @@ class DeviceToken(models.Model):
     token = models.CharField(max_length=500, unique=True)
     platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES)
     is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
     last_used_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:

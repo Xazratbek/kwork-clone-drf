@@ -5,12 +5,16 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from .serializers import OrderCreateSerializer, OrderSerializer, OrderUpdateSerializer, OrderDeliverySerializer
-from .models import  OrderStatus, Order, OrderMessage
+from .models import  OrderStatus, Order, OrderMessage, OrderEvent, OrderRequirement, EventType
 from .utility import send_message
 from .permissions import IsBuyer
 from django.shortcuts import get_object_or_404
 from apps.kworks.models import Kwork, KworkStatus
 from apps.kworks.permissions import IsSeller
+from django.db import transaction
+
+
+
 
 class OrderCreateApiView(APIView):
     permission_classes = [IsBuyer]
@@ -25,16 +29,20 @@ class OrderCreateApiView(APIView):
         serializer = OrderCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        order = serializer.save(
-            buyer=request.user, 
-            seller = kwork.seller, 
-            title_snapshot = kwork.title, 
-            price_minor = kwork.price_minor, 
-            status = OrderStatus.NEW
-            )
-        
-        send_message(order=order, seller = request.user, msg = "Sizga zakaz tushdi")
-        return Response(OrderCreateSerializer(order).data, status=status.HTTP_201_CREATED)
+        with transaction.atomic():
+            order = serializer.save(
+                buyer=request.user, 
+                seller = kwork.seller, 
+                title_snapshot = kwork.title, 
+                price_minor = kwork.price_minor, 
+                status = OrderStatus.NEW
+                )
+            
+            send_message(order=order, sender = request.user, msg = "Sizga zakaz tushdi")
+            OrderEvent.objects.create(order = order, event_type = EventType.CREATED, actor = request.user, description = "Yangi zakaz yaratilindi")
+
+
+            return Response(OrderCreateSerializer(order).data, status=status.HTTP_201_CREATED)
 
 
 class OrderListApiView(APIView):

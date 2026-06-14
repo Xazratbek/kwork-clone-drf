@@ -55,17 +55,18 @@ class Delivery(TimeStampedUUIDModel):
         return f"{self.order_id} delivery"
 
 
-class OrderEvent(TimeStampedUUIDModel):
-    class EventType(models.TextChoices):
-        CREATED = "created", "Created"
-        PAID = "paid", "Paid"
-        ACCEPTED = "accepted", "Accepted"
-        DELIVERED = "delivered", "Delivered"
-        REVISION_REQUESTED = "revision_requested", "Revision Requested"
-        COMPLETED = "completed", "Completed"
-        CANCELED = "canceled", "Canceled"
-        DISPUTED = "disputed", "Disputed"
+class EventType(models.TextChoices):
+    CREATED = "created", "Created"
+    PAID = "paid", "Paid"
+    ACCEPTED = "accepted", "Accepted"
+    DELIVERED = "delivered", "Delivered"
+    REVISION_REQUESTED = "revision_requested", "Revision Requested"
+    COMPLETED = "completed", "Completed"
+    CANCELED = "canceled", "Canceled"
+    DISPUTED = "disputed", "Disputed"
 
+
+class OrderEvent(TimeStampedUUIDModel):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="events")
     event_type = models.CharField(max_length=30, choices=EventType.choices)
     actor = models.ForeignKey(

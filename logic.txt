@@ -42,7 +42,7 @@ Bu uchta model turli vazifani bajaradi. Aralashtirmaslik kerak.
 │ MODEL       │ VAZIFASI                                                       │
 ├─────────────┼────────────────────────────────────────────────────────────────┤
 │ Payment     │ Buyer tashqi tizim orqali to'laydi (Click/Payme/Mock/Stripe).  │
-│             │ Bu — provayder bilan tranzaksiya yozuvi.                        │
+│             │ Bu — provayder bilan tranzaksiya yozuvi.                       │
 │             │ Order bilan 1:1. Status: pending → completed/failed.           │
 ├─────────────┼────────────────────────────────────────────────────────────────┤
 │ Escrow      │ To'lov muvaffaqiyatli bo'lgach pul "us_holda" qoladi.          │
