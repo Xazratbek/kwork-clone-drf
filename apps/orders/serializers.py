@@ -3,9 +3,6 @@ from .models import Order, OrderMessage, OrderStatus, Delivery
 from rest_framework import serializers
 from apps.kworks.serializers import KworkListSerializer
 
-
-
-
 class OrderCreateSerializer(ModelSerializer):
     class Meta:
         model = Order
@@ -37,6 +34,3 @@ class OrderDeliverySerializer(ModelSerializer):
     class Meta:
         model = Delivery
         fields = ['order_id', 'message', 'file']
-
-    
-

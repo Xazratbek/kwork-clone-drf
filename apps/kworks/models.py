@@ -6,9 +6,10 @@ from apps.core.models import Currency, TimeStampedUUIDModel
 
 
 class KworkStatus(models.TextChoices):
-    DRAFT = "draft", "Draft"
-    ACTIVE = "active", "Active"
-    PAUSED = "paused", "Paused"
+    DRAFT = "draft", "Qoralama"
+    ACTIVE = "active", "Aktiv"
+    PAUSED = "paused", "Pauzada"
+    DELETED = "deleted", "O'chirilgan"
 
 class Kwork(TimeStampedUUIDModel):
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="kworks")
