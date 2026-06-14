@@ -71,10 +71,22 @@ async function parseResponse(response) {
   const isJson = response.headers.get("content-type")?.includes("application/json");
   const data = isJson ? await response.json() : await response.text();
   if (!response.ok) {
-    const message = typeof data === "string" ? data : data.detail || data.message || JSON.stringify(data);
-    throw new Error(message || `HTTP ${response.status}`);
+    const message = formatApiError(data) || `HTTP ${response.status}`;
+    throw new Error(message);
   }
   return data;
+}
+
+function formatApiError(data) {
+  if (typeof data === "string") return data;
+  if (!data || typeof data !== "object") return "";
+  if (data.detail || data.message) return data.detail || data.message;
+  if (Array.isArray(data.non_field_errors)) return data.non_field_errors.join(" ");
+  const firstField = Object.entries(data).find(([, value]) => Array.isArray(value) || typeof value === "string");
+  if (!firstField) return JSON.stringify(data);
+  const [field, value] = firstField;
+  const text = Array.isArray(value) ? value.join(" ") : value;
+  return field === "non_field_errors" ? text : `${field}: ${text}`;
 }
 
 async function request(path, options = {}, retry = true) {
@@ -135,6 +147,9 @@ export const api = {
   },
   verifyEmail(token) {
     return request("/api/auth/verify-email/", { method: "POST", body: JSON.stringify({ token }) });
+  },
+  resendVerification(email) {
+    return request("/api/auth/resend-verification/", { method: "POST", body: JSON.stringify({ email }) });
   },
   me() {
     return request("/api/auth/me/");

@@ -74,6 +74,12 @@ function normalizeList(payload) {
   };
 }
 
+function formatMoney(kwork) {
+  const amount = kwork?.price_minor || "10.00";
+  const currency = kwork?.currency || "USD";
+  return currency === "USD" ? `$${amount}` : `${amount} ${currency}`;
+}
+
 function KworkImage({ kwork, index = 0 }) {
   if (kwork.image) {
     return <img src={api.mediaUrl(kwork.image)} alt={kwork.title} />;
@@ -160,7 +166,7 @@ function Landing({ categories, featured, onRoute, onAuth }) {
               <KworkImage kwork={item} index={index} />
               <div>
                 <strong>{item.title}</strong>
-                <span>from ${item.price_minor || "10.00"} · {item.delivery_days || 1} days</span>
+                <span>from {formatMoney(item)} · {item.delivery_days || 1} days</span>
               </div>
             </article>
           ))}
@@ -260,7 +266,7 @@ function KworkCard({ kwork, index, onOpen }) {
         </div>
         <div className="price-row">
           <span><Clock3 size={15} /> {kwork.delivery_days || 1} days</span>
-          <strong>${kwork.price_minor || "10.00"}</strong>
+          <strong>{formatMoney(kwork)}</strong>
         </div>
       </div>
     </article>
@@ -325,7 +331,7 @@ function Detail({ detail, loading, user, onAuth, onBack, onOrder }) {
         </div>
         <aside className="order-box">
           <span>Starting at</span>
-          <strong>${detail.price_minor}</strong>
+          <strong>{formatMoney(detail)}</strong>
           <textarea value={requirements} onChange={(event) => setRequirements(event.target.value)} placeholder="Describe what you need..." />
           <button className="primary-wide" onClick={() => user ? onOrder(requirements) : onAuth("login")}>Order now <Send size={16} /></button>
         </aside>
@@ -388,7 +394,7 @@ function Studio({ categories, myKworks, reloadMyKworks }) {
         {(myKworks.data || []).map((item, index) => (
           <article className="studio-row" key={item.id}>
             <KworkImage kwork={item} index={index} />
-            <div><strong>{item.title}</strong><span>${item.price_minor} · {item.delivery_days} days</span></div>
+            <div><strong>{item.title}</strong><span>{formatMoney(item)} · {item.delivery_days} days</span></div>
             <button onClick={() => action(item.id, "pause")}>Pause</button>
             <button onClick={() => action(item.id, "activate")}>Activate</button>
             <button onClick={() => action(item.id, "delete")}>Delete</button>
@@ -434,7 +440,7 @@ function Orders({ orders, reloadOrders }) {
   );
 }
 
-function AuthModal({ mode, setMode, onClose }) {
+function AuthModal({ mode, setMode, onClose, notify }) {
   const [form, setForm] = useState({ email: "", login: "", password: "", username: "", first_name: "", last_name: "", city: "" });
   const [error, setError] = useState("");
   const isSignup = mode === "signup";
@@ -443,11 +449,17 @@ function AuthModal({ mode, setMode, onClose }) {
     event.preventDefault();
     setError("");
     try {
-      if (isSignup) await api.signup({ email: form.email, password: form.password, username: form.username, first_name: form.first_name, last_name: form.last_name, city: form.city });
-      else await api.login({ login: form.login || form.email, password: form.password });
+      if (isSignup) {
+        await api.signup({ email: form.email, password: form.password, username: form.username, first_name: form.first_name, last_name: form.last_name, city: form.city });
+        notify("Emailingizga tasdiqlash linki yuborildi.", "success");
+      } else {
+        await api.login({ login: form.login || form.email, password: form.password });
+        notify("Tizimga muvaffaqiyatli kirdingiz.", "success");
+      }
       onClose();
     } catch (err) {
       setError(err.message);
+      notify(err.message, "error");
     }
   }
 
@@ -511,8 +523,8 @@ function Loading() {
   return <div className="loading"><Loader2 className="spin" /> Loading API data...</div>;
 }
 
-function VerifyEmailPage({ reloadUser, onRoute }) {
-  const [state, setState] = useState({ loading: true, error: "", message: "" });
+function VerifyEmailPage({ reloadUser, onRoute, notify }) {
+  const [state, setState] = useState({ loading: true, error: "", message: "", email: "", resendBusy: false });
   const token = new URLSearchParams(window.location.search).get("token");
 
   useEffect(() => {
@@ -520,7 +532,7 @@ function VerifyEmailPage({ reloadUser, onRoute }) {
 
     async function verify() {
       if (!token) {
-        setState({ loading: false, error: "Tasdiqlash tokeni topilmadi.", message: "" });
+        setState((prev) => ({ ...prev, loading: false, error: "Tasdiqlash tokeni topilmadi.", message: "" }));
         return;
       }
 
@@ -528,16 +540,31 @@ function VerifyEmailPage({ reloadUser, onRoute }) {
         const response = await api.verifyEmail(token);
         if (!active) return;
         await reloadUser();
-        setState({ loading: false, error: "", message: response.detail || "Email muvaffaqiyatli tasdiqlandi." });
+        setState((prev) => ({ ...prev, loading: false, error: "", message: response.detail || "Email muvaffaqiyatli tasdiqlandi." }));
+        notify("Email muvaffaqiyatli tasdiqlandi.", "success");
       } catch (error) {
         if (!active) return;
-        setState({ loading: false, error: error.message, message: "" });
+        setState((prev) => ({ ...prev, loading: false, error: error.message, message: "" }));
+        notify(error.message, "error");
       }
     }
 
     verify();
     return () => { active = false; };
   }, [token]);
+
+  async function resend(event) {
+    event.preventDefault();
+    setState((prev) => ({ ...prev, resendBusy: true }));
+    try {
+      const response = await api.resendVerification(state.email);
+      notify(response.detail || "Tasdiqlash linki qayta yuborildi.", "success");
+    } catch (error) {
+      notify(error.message, "error");
+    } finally {
+      setState((prev) => ({ ...prev, resendBusy: false }));
+    }
+  }
 
   return (
     <main className="verify-page reveal">
@@ -553,7 +580,13 @@ function VerifyEmailPage({ reloadUser, onRoute }) {
             <X />
             <h1>Email tasdiqlanmadi</h1>
             <p className="error">{state.error}</p>
-            <button className="primary-wide" onClick={() => onRoute("home")}>Bosh sahifaga qaytish</button>
+            <form className="resend-form" onSubmit={resend}>
+              <label>Yangi tasdiqlash linkini olish uchun emailingizni kiriting
+                <input required type="email" value={state.email} onChange={(event) => setState((prev) => ({ ...prev, email: event.target.value }))} placeholder="email@example.com" />
+              </label>
+              <button className="primary-wide" disabled={state.resendBusy}>{state.resendBusy ? <Loader2 className="spin" /> : "Linkni qayta yuborish"}</button>
+            </form>
+            <button className="text-button" onClick={() => onRoute("home")}>Bosh sahifaga qaytish</button>
           </>
         ) : (
           <>
@@ -568,6 +601,19 @@ function VerifyEmailPage({ reloadUser, onRoute }) {
   );
 }
 
+function ToastStack({ toasts, onDismiss }) {
+  return (
+    <div className="toast-stack" aria-live="polite">
+      {toasts.map((toast) => (
+        <button className={`toast toast-${toast.type}`} key={toast.id} onClick={() => onDismiss(toast.id)}>
+          <span>{toast.message}</span>
+          <X size={16} />
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function Empty({ title, text }) {
   return <div className="empty"><Sparkles /><h3>{title}</h3><p>{text}</p></div>;
 }
@@ -578,6 +624,27 @@ function initialRoute() {
   return window.location.hash.replace("#", "") || "home";
 }
 
+function initialCatalogFilters() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    search: params.get("search") || "",
+    category: params.get("category") || "",
+    price_min: params.get("price_min") || "",
+    price_max: params.get("price_max") || "",
+    currency: params.get("currency") || "",
+    page: Number(params.get("page") || 1),
+  };
+}
+
+function catalogQuery(filters) {
+  const query = new URLSearchParams();
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "" && !(key === "page" && Number(value) === 1)) query.set(key, value);
+  });
+  const qs = query.toString();
+  return qs ? `?${qs}` : "";
+}
+
 export default function App() {
   const [route, setRoute] = useState(initialRoute);
   const [user, setUser] = useState(auth.get()?.user || null);
@@ -585,10 +652,17 @@ export default function App() {
   const [categories, setCategories] = useState([]);
   const flatCategories = useMemo(() => flattenCategories(categories), [categories]);
   const [search, setSearch] = useState("");
-  const [catalog, setCatalog] = useState({ loading: true, items: [], count: 0, next: null, previous: null, filters: { search: "", category: "", price_min: "", price_max: "", currency: "", page: 1 } });
+  const [catalog, setCatalog] = useState({ loading: true, items: [], count: 0, next: null, previous: null, filters: initialCatalogFilters() });
   const [detail, setDetail] = useState({ loading: false, data: null });
   const [myKworks, setMyKworks] = useState({ data: [] });
   const [orders, setOrders] = useState([]);
+  const [toasts, setToasts] = useState([]);
+
+  function notify(message, type = "info") {
+    const id = `${Date.now()}-${Math.random()}`;
+    setToasts((prev) => [...prev, { id, message, type }]);
+    window.setTimeout(() => setToasts((prev) => prev.filter((toast) => toast.id !== id)), 4000);
+  }
 
   const loadUser = async () => {
     if (!auth.get()?.access) return setUser(null);
@@ -654,13 +728,17 @@ export default function App() {
 
   function go(nextRoute, params = {}) {
     if (params.search !== undefined) setSearch(params.search);
+    let nextFilters = null;
     if (nextRoute === "catalog") {
-      setCatalog((prev) => ({ ...prev, filters: { ...prev.filters, ...params, page: 1 } }));
+      nextFilters = { ...catalog.filters, ...params, page: 1 };
+      setCatalog((prev) => ({ ...prev, filters: nextFilters }));
     }
     if (nextRoute === "verify-email") {
       window.history.pushState(null, "", "/verify-email");
+    } else if (nextRoute === "catalog") {
+      window.history.pushState(null, "", `/${catalogQuery(nextFilters)}#catalog`);
     } else {
-      if (window.location.pathname !== "/") window.history.pushState(null, "", "/");
+      if (window.location.pathname !== "/" || window.location.search) window.history.pushState(null, "", "/");
       window.location.hash = nextRoute;
     }
     setRoute(nextRoute);
@@ -685,7 +763,9 @@ export default function App() {
 
   function submitSearch(event) {
     event.preventDefault();
-    setCatalog((prev) => ({ ...prev, filters: { ...prev.filters, search, page: 1 } }));
+    const nextFilters = { ...catalog.filters, search, page: 1 };
+    setCatalog((prev) => ({ ...prev, filters: nextFilters }));
+    window.history.pushState(null, "", `/${catalogQuery(nextFilters)}#catalog`);
     setRoute("catalog");
   }
 
@@ -698,12 +778,13 @@ export default function App() {
       {route === "studio" && <Studio categories={flatCategories} myKworks={myKworks} reloadMyKworks={loadMyKworks} />}
       {route === "orders" && <Orders orders={orders} reloadOrders={loadOrders} />}
       {route === "profile" && <Profile user={user} reloadUser={loadUser} />}
-      {route === "verify-email" && <VerifyEmailPage reloadUser={loadUser} onRoute={go} />}
+      {route === "verify-email" && <VerifyEmailPage reloadUser={loadUser} onRoute={go} notify={notify} />}
       <footer className="footer">
         <span>Kworkforge MVP</span>
         <span>Auth · Catalog · Seller Studio · Orders</span>
       </footer>
-      {authMode && <AuthModal mode={authMode} setMode={setAuthMode} onClose={() => setAuthMode(null)} />}
+      <ToastStack toasts={toasts} onDismiss={(id) => setToasts((prev) => prev.filter((toast) => toast.id !== id))} />
+      {authMode && <AuthModal mode={authMode} setMode={setAuthMode} onClose={() => setAuthMode(null)} notify={notify} />}
     </>
   );
 }
