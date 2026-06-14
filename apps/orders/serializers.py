@@ -28,13 +28,15 @@ class OrderUpdateSerializer(ModelSerializer):
 
 
 class OrderStatusUpdateSerializer(ModelSerializer):
-    model = Order
-    fields = ["status"]
+    class Meta:
+        model = Order
+        fields = ["status"]
 
 
 class OrderDeliverySerializer(ModelSerializer):
-    model = Delivery
-    field = ['order_id', 'message', 'file']
+    class Meta:
+        model = Delivery
+        fields = ['order_id', 'message', 'file']
 
     
 

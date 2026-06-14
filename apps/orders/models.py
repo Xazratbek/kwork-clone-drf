@@ -33,6 +33,7 @@ class Order(TimeStampedUUIDModel):
 class OrderMessage(TimeStampedUUIDModel):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="messages")
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="order_messages")
+    receiver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="received_messages")
     body = models.TextField()
 
     class Meta:

@@ -86,11 +86,12 @@ class SellerOrderConfirmOrRejectApiView(APIView):
         
         if status == "in_progress" and order.status == OrderStatus.NEW:
             order.status = status
-
+            order.save()
             return Response({"message":"Zakaz qabul qilindi"})
         
         if status == "rejected" and order.status == OrderStatus.NEW:
             order.status = status
+            order.save()
             return Response({"message":"Zakaz qaytarildi"})
         
         
@@ -99,21 +100,24 @@ class OrderDeliveryApiView(APIView):
 
     def post(self, request):
         serializer = serializer = OrderDeliverySerializer(data=request.data)
-        order_id =  serializer.validated_data["order_id"]
-
-        order = get_object_or_404(Order, pk = order_id, seller = request.user)
-        if order.status != OrderStatus.IN_PROGRESS:
-            raise ValidationError(" Faqat statusi in_progeress bo'lgan zakazlarni topshirishingiz mumkin")\
-            
         serializer.is_valid(raise_exception=True)
-        order_delivery = serializer.save()
-        order_message = OrderMessage(
-            order = order_delivery,
-            sender = request.user,
-            body = "Zakazingiz bajarildi, marhamat tanishib chiqing! "
-        )
-        order_message.save()
+
+        order =  serializer.validated_data["order"]
         
+        if order.seller != request.user:
+            raise ValidationError("Bu sizning zakazingiz emas")
+
+        if order.status != OrderStatus.IN_PROGRESS:
+            raise ValidationError(" Faqat statusi in_progeress bo'lgan zakazlarni topshirishingiz mumkin")
+        
+        order.status = OrderStatus.DELIVERED
+        order.save()
+        serializer.save()
+        send_message(order=order, sender=request.user, msg="Zakazingiz bajarildim marhamat tanishib chiqing!")
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
    
 
 
