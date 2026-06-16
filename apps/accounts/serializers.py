@@ -12,7 +12,6 @@ class SellerProfileSerializer(serializers.ModelSerializer):
         fields = ("display_name", "bio", "status", "rating", "completed_orders")
         read_only_fields = ("status", "rating", "completed_orders")
 
-
 class UserSerializer(serializers.ModelSerializer):
     seller_profile = SellerProfileSerializer(read_only=True)
     is_email_verified = serializers.BooleanField(read_only=True)

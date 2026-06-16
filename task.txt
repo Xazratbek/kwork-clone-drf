@@ -1,0 +1,246 @@
+Backend Integratsiya uchun Task Ro'yxati
+==========================================
+
+Quyida har bir frontend sahifasi uchun kerakli backend endpointlar, viewlar va URL lar ko'rsatilgan.
+
+========================================
+1. AUTH (Autentifikatsiya)
+========================================
+Frontend sahifalar: /auth, /verify-email, /forgot-password
+Already built frontend: ✅
+
+Backend kerakli endpointlar:
+- POST /api/auth/login/          → Token (access + refresh) + user qaytaradi
+- POST /api/auth/signup/         → Token qaytaradi, emailga verify link yuboradi
+- POST /api/auth/verify-email/   → { token } → email tasdiqlaydi
+- POST /api/auth/resend-verification/ → { email } → qayta yuboradi
+- GET  /api/auth/me/             → Current user ma'lumotlari
+- POST /api/auth/become-seller/  → { display_name, bio } → seller profil yaratadi
+- POST /api/auth/forgot-password/ → { email } → parol tiklash linki yuboradi
+- POST /api/auth/reset-password/ → { token, password } → parolni yangilaydi
+- PATCH /api/auth/profile/       → Profile ma'lumotlarini yangilaydi
+- POST /api/auth/change-password/ → { current_password, new_password } → parolni o'zgartiradi
+- GET  /api/auth/seller/<id>/    → Sotuvchi profili ma'lumotlari
+- PATCH /api/auth/notification-preferences/ → Bildirishnoma sozlamalari
+
+View: AuthViewSet, SellerProfileView, PasswordResetView
+URL: apps/accounts/urls.py
+
+========================================
+2. CATALOG (Kategoriyalar)
+========================================
+Frontend sahifalar: /catalog (kategoriyalar filtri bilan)
+Already built frontend: ✅
+
+Backend kerakli endpointlar:
+- GET /categories/category-list/ → Barcha kategoriyalar (nested children bilan)
+
+View: CategoryListView
+URL: apps/catalog/urls.py
+
+========================================
+3. KWORKS (Xizmatlar)
+========================================
+Frontend sahifalar: /catalog, /kwork/[id], /studio
+Already built frontend: ✅
+
+Backend kerakli endpointlar:
+- GET    /kworks/                    → Xizmatlar ro'yxati (pagination, filter bilan)
+                                     Query params: search, category, price_min, price_max, currency, page
+- GET    /kworks/kwork/<id>/         → Bitta xizmat batafsil
+- POST   /kworks/kwork/create/       → Yangi xizmat yaratish (seller)
+- PATCH  /kworks/kwork/update/<id>/  → Xizmatni tahrirlash
+- POST   /kworks/kwork/pause/<id>/   → Xizmatni pauza qilish
+- POST   /kworks/kwork/activate/<id>/ → Xizmatni faollashtirish
+- POST   /kworks/kwork/<id>/delete/  → Xizmatni o'chirish
+- GET    /kworks/my/                 → Sotuvchining o'z xizmatlari
+- POST   /kworks/kwork/<id>/favorite/ → Sevimlilar qo'shish
+- DELETE /kworks/kwork/<id>/favorite/ → Sevimlilardan o'chirish
+- GET    /kworks/favorites/          → Sevimlilar ro'yxati
+
+View: KworkViewSet, KworkCreateView, KworkManageView, FavoriteView
+URL: apps/kworks/urls.py
+
+========================================
+4. ORDERS (Buyurtmalar)
+========================================
+Frontend sahifalar: /orders, /chat
+Already built frontend: ✅
+
+Backend kerakli endpointlar:
+- GET    /orders/                            → Buyurtmalar ro'yxati
+- POST   /orders/kworks/<kwork_id>/order/     → Yangi buyurtma yaratish
+- PATCH  /orders/<id>/                        → Buyurtmani yangilash
+- POST   /orders/<id>/confirm/                → Buyurtmani tasdiqlash/rad etish { status }
+- POST   /orders/<id>/deliver/                → Yetkazish { message, file? }
+- GET    /orders/<id>/messages/               → Buyurtma xabarlari
+- POST   /orders/<id>/messages/               → Xabar yuborish { body, file? }
+- POST   /orders/<id>/review/                 → Sharh qoldirish { rating, comment }
+- POST   /orders/<id>/pay/                    → To'lov qilish { provider }
+- POST   /orders/<id>/dispute/                → Nizo ochish { reason }
+
+View: OrderViewSet, OrderMessageView, DeliveryView, ReviewView
+URL: apps/orders/urls.py
+
+========================================
+5. NOTIFICATIONS (Bildirishnomalar)
+========================================
+Frontend sahifalar: /notifications
+Already built frontend: ✅
+
+Backend kerakli endpointlar:
+- GET    /notifications/                → Bildirishnomalar ro'yxati
+- POST   /notifications/<id>/read/      → Bitta bildirishnomani o'qilgan qilish
+- POST   /notifications/read-all/       → Barchasini o'qilgan qilish
+- GET    /notifications/preferences/    → Sozlamalar
+- PATCH  /notifications/preferences/    → Sozlamalarni yangilash
+
+View: NotificationViewSet, NotificationPreferenceView
+URL: apps/notifications/urls.py (yaratilishi kerak)
+
+========================================
+6. WALLET (Hamyon)
+========================================
+Frontend sahifalar: /wallet
+Already built frontend: ✅
+
+Backend kerakli endpointlar:
+- GET  /wallets/                           → Hamyon ma'lumotlari (balance, escrow_balance)
+- GET  /wallets/transactions/              → Tranzaksiyalar ro'yxati
+- GET  /wallets/withdrawals/               → Pul yechish so'rovlari
+- POST /wallets/withdrawals/create/        → Yangi pul yechish so'rovi
+     { amount, method, phone_number?, bank_account? }
+
+View: WalletViewSet, WalletTransactionView, WithdrawalRequestView
+URL: apps/wallets/urls.py (yaratilishi kerak)
+
+========================================
+7. PAYMENTS (To'lovlar)
+========================================
+Frontend sahifalar: To'lov buyurtma ichida amalga oshiriladi
+Already built frontend: ✅
+
+Backend kerakli endpointlar:
+- POST /orders/<id>/pay/  → To'lov qilish { provider: "click"|"payme"|"mock" }
+- GET  /payments/<id>/    → To'lov holati
+
+View: PaymentView
+URL: apps/payments/urls.py (yaratilishi kerak)
+
+========================================
+8. REVIEWS (Sharhlar)
+========================================
+Frontend sahifalar: /reviews, seller/[id] sahifasida
+Already built frontend: ✅
+
+Backend kerakli endpointlar:
+- GET  /reviews/                        → Barcha sharhlar
+- GET  /reviews/?seller=<seller_id>     → Sotuvchi sharhlari
+- POST /orders/<id>/review/             → Sharh qoldirish { rating: 1-5, comment }
+
+View: ReviewViewSet
+URL: apps/reviews/urls.py (yaratilishi kerak)
+
+========================================
+9. OFFERS (Takliflar)
+========================================
+Frontend sahifalar: /offers
+Already built frontend: ✅
+
+Backend kerakli endpointlar:
+- GET  /offers/sent/                    → Yuborilgan takliflar
+- GET  /offers/received/                → Qabul qilingan takliflar
+- POST /offers/create/                  → Yangi taklif yaratish
+     { buyer, title, description, price, delivery_days }
+- POST /offers/<id>/accept/             → Taklifni qabul qilish
+- POST /offers/<id>/reject/             → Taklifni rad etish
+
+View: CustomOfferViewSet
+URL: apps/offers/urls.py (yaratilishi kerak)
+
+========================================
+10. EXCHANGE (Loyihalar / Bid)
+========================================
+Frontend sahifalar: /projects
+Already built frontend: ✅
+
+Backend kerakli endpointlar:
+- GET  /exchange/projects/                    → Loyihalar ro'yxati
+- POST /exchange/projects/create/             → Yangi loyiha yaratish
+     { title, description, budget, deadline }
+- GET  /exchange/bids/my/                     → Mening takliflarim
+- POST /exchange/projects/<id>/bid/           → Loyihaga taklif berish
+     { amount, delivery_days, message }
+
+View: ProjectViewSet, ProjectBidViewSet
+URL: apps/exchange/urls.py (yaratilishi kerak)
+
+========================================
+11. SELLER DASHBOARD (Analitika)
+========================================
+Frontend sahifalar: /studio (qo'shimcha)
+Already built frontend: ✅ (qisman)
+
+Backend kerakli endpointlar:
+- GET /api/auth/seller/dashboard/     → Sotuvchi dashboardi
+     { total_earnings, total_orders, avg_rating, active_kworks, recent_orders }
+
+View: SellerDashboardView
+URL: apps/accounts/urls.py (qo'shimcha)
+
+========================================
+UMUMIY TALABLAR
+========================================
+
+1. JWT Authentication:
+   - POST /api/token/          → Token olish
+   - POST /api/token/refresh/  → Token yangilash
+
+2. CORS sozlamalari:
+   - FRONTEND_URL = "http://localhost:3000"
+   - CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
+
+3. Media fayllar:
+   - /media/kworks/        → Kwork rasmlari
+   - /media/avatars/       → Foydalanuvchi rasmlari
+   - /media/deliveries/    → Yetkazish fayllari
+   - /media/order_requirements/ → Buyurtma fayllari
+
+4. Pagination:
+   - Barcha list endpointlari paginated bo'lishi kerak
+   - Format: { count, next, previous, results }
+
+5. Filtrlash:
+   - /kworks/ → search, category, price_min, price_max, currency, page
+   - /reviews/ → seller, rating
+
+6. Serialization:
+   - KworkSerializer: id, title, slug, description, price_minor, currency, delivery_days, image, status, seller(id, username), category(id, name)
+   - OrderSerializer: id, title_snapshot, price_minor, currency, requirements, status, buyer_username, seller_username
+   - ReviewSerializer: id, rating, comment, buyer_username, seller_username, created_at
+
+========================================
+SAFHLAR RO'YXATI (Frontend)
+========================================
+
+| #  | Sahifa                | URL                    | Backend endpoint talablari |
+|----|----------------------|------------------------|---------------------------|
+| 1  | Landing              | /                      | -                         |
+| 2  | Katalog              | /catalog               | kworks, categories        |
+| 3  | Kwork batafsil       | /kwork/[id]            | kwork, createOrder        |
+| 4  | Sotuvchi studiyasi   | /studio                | createKwork, myKworks     |
+| 5  | Buyurtmalar          | /orders                | orders, confirm, deliver  |
+| 6  | Xabarlar (Chat)      | /chat                  | orderMessages, sendMessage|
+| 7  | Profil               | /profile               | me, becomeSeller          |
+| 8  | Sozlamalar           | /settings              | updateProfile, changePassword, notifPrefs |
+| 9  | Sevimlilar           | /favorites             | favorites                 |
+| 10 | Bildirishnomalar     | /notifications         | notifications, markRead   |
+| 11 | Hamyon               | /wallet                | wallet, transactions, withdrawals |
+| 12 | Takliflar            | /offers                | sentOffers, receivedOffers|
+| 13 | Loyihalar            | /projects              | projects, myBids          |
+| 14 | Sharhlar             | /reviews               | reviews                   |
+| 15 | Sotuvchi profili     | /seller/[id]           | sellerProfile, kworks, reviews |
+| 16 | Auth (Kirish)        | /auth?mode=login       | login                     |
+| 17 | Auth (Ro'yxatdan o'tish) | /auth?mode=signup  | signup                    |
+| 18 | Email tasdiqlash     | /verify-email          | verifyEmail               |
+| 19 | Parolni tiklash      | /forgot-password       | forgotPassword            |
